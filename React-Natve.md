@@ -6,7 +6,7 @@
 
 `Clone with HTTPS`: **`https://github.com/facebook/react-native.git`**
 
-以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想搞清楚 React Native 的移动端实现原理.
+以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想搞清楚 `React Native` 的移动端实现原理.
 
 一. `Clone` 下来的文件夹里面现先看了一下 `README.md` 文件, 罗列几点:
 
@@ -18,7 +18,7 @@
 
 4. Another great way to learn more about the components and APIs included with React Native is to read their source, Look under the `Libraries/Components` directory for components like **ScrollView** and **TextInput**(了解更多关于 `React Native` 的 `组件` 和 `API` 的方法是 读它的源码, 在 `Libraries/Components` 文件夹下有像 `ScrollView` 和 `TextInput` 的组件)
 
-二. `大致` 浏览了 `package.json` 文件, 了解 `React Native` 包的入口文件是 `Libraries/react-native/react-native-implementation.js`
+二. `大致` 浏览了 `package.json` 文件, 了解 `React Native` 包的入口文件是 `Libraries/react-native/react-native-implementation.js`
 
 ![](./img/entry.png)
 
