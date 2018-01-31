@@ -6,7 +6,7 @@
 
 `Clone with HTTPS`: **`https://github.com/facebook/react-native.git`**
 
-以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想搞清楚 `React Native` 的移动端实现原理.
+以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想 搞清楚 `React Native` 的移动端实现原理.
 
 一. `Clone` 下来的文件夹里面现先看了一下 `README.md` 文件, 罗列几点:
 
