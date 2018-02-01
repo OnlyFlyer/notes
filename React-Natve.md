@@ -184,9 +184,45 @@ module.exports = ReactNative;
 
 1. `AccessbilityInfo`
 
-    查询 `AccessbilityInfo` 组件位置的时候偶然发现了一个文件, 在 `~/react-native/website/server/` 文件夹下有个叫 `docsList.js` 文件, 大致看了一下, 包含了很多组件, API.. 的具体位置, 先看这个文件对于后面找文件的时候 `大有裨益`.
+    - 查询 `AccessbilityInfo` 组件位置的时候偶然发现了一个文件, 在 `~/react-native/website/server/` 文件夹下有个叫 `docsList.js` 文件, 大致看了一下, 包含了很多组件, API.. 的具体位置, 先看这个文件对于后面找文件的时候 `大有裨益`.
 
-    `AccessbilityInfo` 组件在 `~/react-native/Libraries/Components/AccessibilityInfo` 文件夹下
+    - `AccessbilityInfo` 组件在 `~/react-native/Libraries/Components/AccessibilityInfo` 文件夹下
+
+    - 准确的说, `AccessbilityInfo` 是一个 `Object`, 里面包含了 `fetch`, `addEventListener`, `setAccessibilityFocus`, `announceForAccessibility`, `removeEventListener` 五个方法
+        1. `fetch`
+
+            ```JavaScript
+                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js 文件
+                fetch () {
+                    return new Promise((resolve, reject) => {
+                        AccessibilityMananger.getCurrentVoiceOverState(
+                            resolve,
+                            reject
+                        )
+                    })
+                }
+
+                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.android.js 文件
+                fetch () {
+                    return new Promise((resolve, reject) => {
+                        RCTAccessibilityInfo.isTouchExplorationEnabled(
+                            function (resp) {
+                                resolve(resp)
+                            }
+                        )
+                    })
+                }
+            ```
+            由此可看出 `fetch` 返回的是一个 `Promise`
+
+
+        2. `addEventListener`
+
+        3. `setAccessibilityFocus`
+
+        4. `announceForAccessibility`
+
+        5. `removeEventListener`
 2. `ActivityIndicator`
 
 
