@@ -1,0 +1,147 @@
+
+# promise 理解
+
+本文是看完 `liubin` 的博客中写的 `JavaScript Promise 迷你书` 总结的, 有需要的可以去看一看, 地址: [JavaScript Promise迷你书](http://liubin.org/promises-book/#introduction)
+
+`Promise` 是抽象异步处理对象以及对其进行各种操作的组件
+
+```JavaScript
+
+  getAsync('file.txt', function (error, result) {
+    if (error) {
+      throw error
+    }
+    // 取得成功时的处理
+  })
+
+```
+
+`Node.js` 规定在 `JavaScript` 的回调函数的第一个参数为 `Error` 对象, 而 `Promise` 把类似的一步处理对象和处理规则进行规范化, 并按照采用统一的接口来编写, 而采取规定方法之外的写法都会出错.
+
+```JavaScript
+
+  let promise = getAsyncPromise('file.txt')
+  promise
+    .then(function (result) {
+      // 获取文件成功时的处理
+    })
+    .catch(function (error) {
+      // 获取文件失败时的处理
+    })
+
+```
+
+上面的代码可以看出, `promise` 的功能是可以将复杂的异步处理轻松地进行模式化
+
+
+`Promise` 类似于 `XMLHttpRequest`, 从构造函数 `Promise` 来创建一个新建新 `promise` 对象作为接口
+
+要想创建一个 `promise` 对象, 可以使用 `new` 来调用 `Promise` 的构造器来进行实例化
+
+```JavaScript
+  let promise = new Promise(function (resolve, reject) {
+    // 异步处理
+    // 处理结束后, 调用 resolve 或 reject
+  })
+
+```
+
+对通过 `new` 生成的 `promise` 对象为了设置其值在 `resolve(成功)` / `reject(失败)` 时调用的回调函数, 可以使用 `promise.then` 实例方法.
+
+```JavaScript
+
+  promise.then(onFulfilled, onRejected)
+
+```
+
+**resolve(成功)时:** `onFulfilled` 会被调用
+
+**reject(失败)时:** `onRejected` 会被调用
+
+`onFulfilled` 、 `onRejected` 两个都为可选参数
+
+`promise.then` 成功和失败时都可以使用, `另外, 在只想对异常进行处理时可以采用 promise.then(undefined, onRejected)` 这种方式, 只指定 `reject` 时的回调函数即可, 不过这时 `promise.catch(onRejected)` 应该更好一点
+
+```JavaScript
+
+  promise.then(undefined, onRejected)
+
+  promise.catch(onRejected)
+
+```
+
+像 `Promise` 这样的全局对象还拥有一些静态方法
+
+包括 `Promise.all()` 、 `Promise.resolve` 等在内, 主要都是一些对 `Promise` 进行操作的辅助方法
+
+```JavaScript
+
+  function asyncFunction () {
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        resolve('Hello !')
+      }, 1000)
+    })
+  }
+
+  asyncFunction()
+    .then(function (value) {
+      console.log(value)
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+
+    // 答案是隔1秒后输出 Hello !
+    // 我个人的理解是: .then()函数接受的是成功之后的回调函数, .catch()函数接受的是失败后的回调函数, 当 asyncFunction() 执行的时候, 返回的是一个 Promise 对象, 里面有一个定时器, 因此 1秒后执行 resolve 出来, 反馈给 .then() 函数, 因此输出了 Hello !
+```
+
+
+  下面是看了 `liubin` 博客后模仿写了用 `Promise` 来通过异步处理方式来获取 `XMLHttpRequest(XMR)` 的数据
+
+```JavaScript
+
+  function getURL (URL) {
+    return new Promise(function (resolve, reject) {
+      let req = new XMLHttpRequest()
+      // 异步为 true, 同步为 false
+      req.open('GET', URL, true)
+      req.onload = function () {
+        if (req.readyState === 4 && req.status === 200) {
+          resolve(req.responseText)
+        } else {
+          reject(new Error(req.statusText))
+        }
+      }
+      req.onerror = function () {
+        reject(new Error(req.statusText))
+      }
+      res.send()
+    })
+  }
+
+  getURL('http://httpbin.org/get')
+    .then(function (value) {
+      console.log(value)
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
+
+```
+
+简单的说: `getURL()` 函数返回一个 `Promise`, Ajax 请求写在 `Promise` 内, 若请求成功, 则 将结果塞到 `resovle` 方法里面, 所以在 `.then()` 方法能够获取到成功的数据, 失败的时候 将结果 塞到 `reject` 函数里, 在 `.catch()` 函数中能够获取的 `error` 信息
+
+
+`Promise.resolve`
+
+```JavaScript
+
+  new Promise(function (resovle) {
+    resolve(42)
+  })
+
+  Promise.resolve(42)
+
+  // 后者可认为是前者代码的语法糖
+```
