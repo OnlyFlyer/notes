@@ -6,7 +6,22 @@
 
 `Clone with HTTPS`: **`https://github.com/facebook/react-native.git`**
 
-以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想搞清楚 `React Native` 的移动端实现原理.
+以上两种方式都可 `Clone` 源码, 研究 React Native 源码一方面是为了 `论文`, 与此相关, 另一方面是想搞清楚 `React Native` 的移动端实现原理, 由于 `React Native` 还在茁壮成长, 因此我只能去读 某一个 `stable` 版本, 下载下来的 项目包 无论从 `package.json` 还是 入口文件: `react-native-implementation.js` 都不能查看到版本号, 万般无奈之下向facebook团队提了 `issue` , 立马解决了, 最后确定版本定为: `0.50-stable`.
+
+```JavaScript
+    // clone the project
+    git clone git@github.com:facebook/react-native.git
+
+    // swiching branch to 0.50-stable
+    git checkout 0.50-stable
+
+    // pull remote source
+    git pull
+
+```
+
+![](./img/issue1.png)
+![](./img/issue2.png)
 
 一. `Clone` 下来的文件夹里面现先看了一下 `README.md` 文件, 罗列几点:
 
