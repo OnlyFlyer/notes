@@ -48,6 +48,12 @@
 
 对通过 `new` 生成的 `promise` 对象为了设置其值在 `resolve(成功)` / `reject(失败)` 时调用的回调函数, 可以使用 `promise.then` 实例方法.
 
+
+## `promise` 的三种状态
+
+`promise` 对象有三个状态: `resolve` , 此时会调用 `onFulfilled` , `reject` , 此时会调用 `Rejected` , `Pending` , 也就是 `promise` 对象刚被创建后的初始化状态
+
+
 ```JavaScript
 
   promise.then(onFulfilled, onRejected)
@@ -133,7 +139,7 @@
 简单的说: `getURL()` 函数返回一个 `Promise`, Ajax 请求写在 `Promise` 内, 若请求成功, 则 将结果塞到 `resovle` 方法里面, 所以在 `.then()` 方法能够获取到成功的数据, 失败的时候 将结果 塞到 `reject` 函数里, 在 `.catch()` 函数中能够获取的 `error` 信息
 
 
-`Promise.resolve`
+## `Promise.resolve`
 
 ```JavaScript
 
@@ -143,5 +149,23 @@
 
   Promise.resolve(42)
 
-  // 后者可认为是前者代码的语法糖
+  // 后者可认为是前者代码的语法糖, Promise.resolve(42) 会让这个 Promise 对象进入确定状态(即 resolved 状态), 并将其状态的值 42 传给后面 .then 函数
+  // 因为 Promise.resolve(value) 的返回值也是一个 promise 对象, 所以我们可以对其返回值进行 .then 调用, 如:
+
+  Promise.resolve(42)
+    .then(function (value) {
+      console.log(value)
+    })
+
 ```
+
+`Promise.resolve` 方法另一个作用就是将 `thenable` 对象转换为 `promise` 对象, `thenable` 是一个很像 `promise` 的东西, 但又不完全是, 就像 我们常用的 `数组` 与 `类数组` 的关系,
+`thenable` 指的是具有 `.then` 方法的对象, 但是其 `.then` 并没有遵循 `Promise/A+` 或 `ES6 Promise` 标准, 因此可能会出现缺失部分信息的问题, `Promise.resolve` 只是用了共通的方法 `then`, 提供了在不同的类库之间进行 `promise` 对象互相转换的功能.
+
+总结一下 `Promise.resolve` 方法, 就是将传递给它的参数填充到 `promise` 对象后并返回这个 `promise` 对象
+
+## `Promise.reject`
+
+
+
+
