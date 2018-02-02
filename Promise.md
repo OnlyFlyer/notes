@@ -166,6 +166,97 @@
 
 ## `Promise.reject`
 
+`Promise.reject(error)` 是和 `Promise.resolve(value)` 类似的静态方法, 是 `new Promise()` 方法的快捷方式.
+
+`Promise.reject(new Error('error'))` 是下面代码的语法糖形式
+
+```JavaScript
+
+  new Promise(function (resolve, reject) {
+    reject(new Error('error'))
+  })
+
+```
+
+上面代码的功能是调用该 `promise` 对象通过 `then` 指定的 `onRejected` 函数, 并将错误(Error) 对象传递给 `onRejected` 函数
 
 
+```JavaScript
+
+  Promise.reject(new Error('BOOM!')).catch(function (error) {
+    console.error(error)
+  })
+
+```
+
+```JavaScript
+
+  let promise = new Promise(function (resolve) {
+    console.log('inner promise')
+    resolve(42)
+  })
+
+  promise
+    .then(function (value) {
+      console.log(value)
+    })
+
+  console.log('outer promise')
+
+  // inner promise
+  // outer promise
+  // 42
+
+```
+
+
+```JavaScript
+
+let promise = function () {
+  return new Promise(function(resolve, reject){
+    // let data = fetch('http://httpbin.org/get').then()
+    // let data = new XMLHttpRequest()
+    // data.open('GET', 'http://httpbin.org/get', true)
+    // dat.send()
+    let data = '小王八'
+    if (data) {
+    	resolve(data)
+    } else {
+    	reject(data)
+    }
+  })
+}
+
+promise()
+  .then(function(res){
+    console.log(res, 1111)
+    return res + '1'
+  })
+  .then(function(res){
+    console.log(res, 2222)
+    return res + '2'
+  })
+  .then(function(res){
+    console.log(res, 3333)
+    return res + '3'
+  })
+  .then(function(res){
+    console.log(res, 4444)
+    return res + '4'
+  })
+  .then(function(res){
+    console.log(res, 5555)
+    return res + '5'
+  })
+  .catch(function(err){
+    console.log(err, 6666)
+  })
+
+  // 小王八 1111
+  // 小王八1 2222
+  // 小王八12 33333
+  // 小王八123 4444
+  // 小王八1234 5555
+
+```
 
