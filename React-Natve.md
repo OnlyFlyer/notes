@@ -192,7 +192,7 @@ module.exports = ReactNative;
         1. `fetch`
 
             ```JavaScript
-                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js 文件
+                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.ios.js
                 fetch () {
                     return new Promise((resolve, reject) => {
                         AccessibilityMananger.getCurrentVoiceOverState(
@@ -202,7 +202,7 @@ module.exports = ReactNative;
                     })
                 }
 
-                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.android.js 文件
+                // ~/react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo.android.js
                 fetch () {
                     return new Promise((resolve, reject) => {
                         RCTAccessibilityInfo.isTouchExplorationEnabled(
