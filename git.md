@@ -57,28 +57,28 @@
 
   ```JavaScript
 
-  git config --global user.name 'xx'
+    git config --global user.name 'xx'
 
-  git config --global user.email 'xx@yy.com'
+    git config --global user.email 'xx@yy.com'
   
   ```
 
   之后可以配置一下默认的文本编辑器, 当 Git 需要你输入信息时会调用它. 若未配置则会使用默认的文本编辑器, 通常是 Vim
 
-  ```
+  ```JavaScript
 
-  git config --global core.editor xx
+    git config --global core.editor xx
  
   ```
 
   想要检查配置 可以用 `git config --list` 来列出所有 Git 能够找到的配置
 
-  ```
-  $ git config --list
-  credential.helper=osxkeychain
-  user.name=wutao
-  user.email=wutao@smartx.com
-  github.user=username
+  ```JavaScript
+    $ git config --list
+    credential.helper=osxkeychain
+    user.name=wutao
+    user.email=wutao@smartx.com
+    github.user=username
   
   ```
 
@@ -127,11 +127,24 @@
   
   ```
 
+`列出/创建标签`
+
+```JavaScript
+
+  // 列出标签
+  git tag
+
+  // 创建标签
+  git tag -a 'v1.0' -m 'this is v1.0'
+
+```
+
+
   `可以跳过使用暂存区域的方式`
 
-  ```
-  // 就是 git add 和 git commit 的综合
-  git commit -a -m 'xxx'
+  ```JavaScript
+    // 就是 git add 和 git commit 的综合
+    git commit -a -m 'xxx'
   
   ```
 
@@ -168,20 +181,21 @@
 
   `更改文件`
 
-  ```
-  // 将 aa 文件 更名为 bb
-  git mv aa bb
+  ```JavaScript
+    // 将 aa 文件 更名为 bb
+    git mv aa bb
 
-  // 下面三条命令与上面一条功能上一致
-  mv aa bb
-  git rm aa
-  git add bb
+    // 下面三条命令与上面一条功能上一致
+    mv aa bb
+    git rm aa
+    git add bb
+
   ```
 
   `移除文件`
 
-  ```
-  -- 待添加
+  ```JavaScript
+    -- 待添加
   
   ```
 
@@ -216,18 +230,54 @@
   ```
 
   `取消暂存文件`
-  ```
-  git reset HEAD xx.xx
 
-  // or
+  ```JavaScript
+    git reset HEAD xx.xx
 
-  git reset xx.xx
+    // or
+
+    git reset xx.xx
   
   ```
 
   `撤销修改`
 
-  ```
-  git checkout -- xx.xx
+  ```JavaScript
+
+    git checkout -- xx.xx
   
   ```
+
+
+`Git 别名`
+
+```JavaScript
+
+  // git co === git checkout
+  git config --global alias.co checkout
+
+  // git br === git branch
+  git config --global alias.br branch
+
+  // git st === git status
+  git config --global alias.st status
+
+  // git ci === git commit
+  git config --global alias.ci commit
+
+
+  // git unstage fileA === git reset HEAD -- fileA
+  git config --global alias.unstage 'HEAD --'
+
+  // git last = git log -1 HEAD
+  git config --global alias.last 'log -1 HEAD'
+
+```
+
+# 学习 Git 中的问题和答案
+
+1. `HEAD` 和 `origin` 的具体意思
+
+> `HEAD` 是一个特殊的指针, 指向当前所在的本地分支(将 `HEAD` 想象为当前分支的别名)
+
+> `origin` 是运行 `git clone` 时默认的远程仓库名字 **错误的, 暂时不理解**
