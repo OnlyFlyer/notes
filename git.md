@@ -86,7 +86,7 @@
 
   ```JavaScript
 
-  git clone SSH address
+  git clone xxx
 
   ```
 
@@ -127,6 +127,14 @@
   
   ```
 
+  `可以跳过使用暂存区域的方式`
+
+  ```
+  // 就是 git add 和 git commit 的综合
+  git commit -a -m 'xxx'
+  
+  ```
+
   `查看分支提交的日志信息`
 
   ```JavaScript
@@ -158,6 +166,25 @@
   
   ```
 
+  `更改文件`
+
+  ```
+  // 将 aa 文件 更名为 bb
+  git mv aa bb
+
+  // 下面三条命令与上面一条功能上一致
+  mv aa bb
+  git rm aa
+  git add bb
+  ```
+
+  `移除文件`
+
+  ```
+  -- 待添加
+  
+  ```
+
   `合并代码`
 
   ```JavaScript
@@ -185,5 +212,22 @@
 
     // 网上还有一种命令方式
     git push --delete test
+  
+  ```
+
+  `取消暂存文件`
+  ```
+  git reset HEAD xx.xx
+
+  // or
+
+  git reset xx.xx
+  
+  ```
+
+  `撤销修改`
+
+  ```
+  git checkout -- xx.xx
   
   ```
