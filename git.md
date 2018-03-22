@@ -274,6 +274,22 @@
 
 ```
 
+
+# 执行 merge 操作时候的几种情况
+
+1. 可以直接提 `PR` , 将你的分支 `merge` 到主干分支上去, 然后指派给 `manager` , `review` 完没问题就合进去了, 但是这种 `merge` 操作会造成 `commit` 记录冗杂紊乱, 这里还有另外一种更好的 `merge` 方法
+
+```JavaScript
+
+  $your branch: git merge target branch
+
+```
+
+2. `rebase` (变基)
+
+      - 当远端分支的版本
+
+
 # 学习 Git 中的问题和答案
 
 1. `HEAD` 和 `origin` 的具体意思
