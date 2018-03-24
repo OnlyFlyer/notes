@@ -277,7 +277,14 @@
 
 # 执行 merge 操作时候的几种情况
 
-1. 可以直接提 `PR` , 将你的分支 `merge` 到主干分支上去, 然后指派给 `manager` , `review` 完没问题就合进去了, 但是这种 `merge` 操作会造成 `commit` 记录冗杂紊乱, 这里还有另外一种更好的 `merge` 方法
+1. 可以直接提 `PR` , 将你的分支 `merge` 到主干分支上去, 然后指派给 `manager` , `review` 完没问题就合进去了, 这是一个三方合并的操作, 但是这种 `merge` 操作会造成 `commit` 记录冗杂紊乱, 这里还有另外一种更好的 `merge` 方法
+
+![](./img/merge-1.png)
+
+![](./img/merge-2.png)
+
+![](./img/merge-3.png)
+
 
 ```JavaScript
 
@@ -286,6 +293,33 @@
 ```
 
 2. `rebase` (变基)
+
+> `rebase` (变基) 与 `merge` 操作的功能是一样的, 都是为了合并分支, 但是比 `git merge` 要好一点, `rebase` 会将源分支上的 `commit` 快照一段一段的与 `目标分支` 比较, 因此分支会跳到我们不常见的分支上, 待我们解决完冲突后, 即执行 `git add .`, **注意:** `此处不需要 git commit`, 因为之前都有 `commit` 记录的, 我们只是解决冲突完放于暂存区而已, 之后执行 `git rebase --continue`, 不过如果这些冲突是之前同事解决过的, 那么需要执行 `git rebase --skip`, 意思是放弃解决这个冲突, 这样就不需要做重复性的工作了, 最后 `rebase` 完后 `git push` 就可以了, 这样的话 `commit` 记录看起来会很整洁.
+
+![](./img/rebase-1.png)
+
+![](./img/rebase-2.png)
+
+![](./img/rebase-3.png)
+
+   - 基本命令
+
+```JavaScript
+  git pull --rebase origin master
+
+  git rebase master
+
+  git add .
+  // 某一个 commit 冲突解决完成, 继续下一个 commit 解决冲突
+  git rebase --continue
+
+  git add .
+  git rebase --continue
+
+  // 放弃这个冲突
+  git rebase --skip
+
+```
 
       - 当远端分支的版本
 
@@ -296,4 +330,4 @@
 
 > `HEAD` 是一个特殊的指针, 指向当前所在的本地分支(将 `HEAD` 想象为当前分支的别名)
 
-> `origin` 是运行 `git clone` 时默认的远程仓库名字 **错误的, 暂时不理解**
+> `origin` 是运行 `git clone` 时默认的远程仓库名字 **错误的, 暂时不理解**, `正解:` 远端分支别名
