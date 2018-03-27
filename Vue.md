@@ -1,1 +1,130 @@
 # Vue 总结
+
+1. 数据驱动
+
+Vue.js 的核心是一个响应的数据绑定系统, 它让 `数据` 和 `DOM` 保持同步很简单. 在使用 `Vue` 开发项目的时候, 我们在普通 `HTML` 模版中使用特殊的语法将 `DOM` 绑定 到底层数据, 一旦创建绑定后, `DOM` 将与数据保持同步. 这样的话我们应用中的逻辑几乎都是直接修改数据而不必与 `DOM` 更新搅在一起, 让代码更容易理解和维护.
+
+2. 双向绑定
+
+
+个人对 `Vue` 的理解是让 `DOM` 与 `数据` 形成一个类似于函数映射的关系, 我们知道, 在数学中, 函数的定义是: 输入值集合中的 `每一项` 元素皆能对应 `唯一一项` 输出值集合的元素. 先暂且不用管 `DOM` 和 `数据` 谁是自变量, 谁是函数值, 它们之间任意一个发生改变, 另一个也会跟着一起改变, 这就是 `Vue` 的响应数据绑定的原理. 其次, 现在的 `web` 界面都是 数据驱动的, 也就是说, 数据更替从而使得 `DOM` 的变化, 从而达到了 `web` 界面刷新的效果.
+
+3. 组件系统
+
+![](./img/vue-components.png)
+
+对于组件可能很多人都不陌生, 现在的前端框架基本都有组件这一说, `Vue` 组件是提供了一种抽象, 让我们可以用独立的可复用的小组件来构建复杂的大型应用. 组件的好处很多, 第一, 高可用, 减少重复性操作. 第二, 组件一般都定义为自定义组件, 组件间的数据流和组件内部的数据流严格区分开, 方便管理和维护.
+
+4. Vue 实例
+
+每个 Vue.js 应用的起步都是通过构造函数 `Vue` 创建一个 Vue的根实例.
+
+```JavaScript
+
+  let vm = new Vue({
+    // ...
+  })
+
+```
+
+一个 Vue 实例就是 MVVM 模式中描述的 `ViewModel`. 在实例化 Vue 时, 需要传入一个选项对象, 它包含数据、模版、挂载元素、方法、生命周期函数等选项.
+
+Vue 实例暴露出一些实例属性和方法, 这些属性和方法都有前缀 $, 以便与代理的数据属性区分.
+
+```JavaScript
+
+  let data = {
+    a: 1
+  }
+  let vm = new Vue({
+    el: '#div1',
+    data
+  })
+
+  vm.$data === data // -> true
+  vm.$el === document.getElementById('div1') // -> true
+
+```
+> `Vue` 生命周期
+
+![](./img/vue-lifecycle.png)
+
+`Vue` 生命周期函数是 `Vue 实例` 在创建时一系列的初始化步骤, 建立数据观察、编译模版、创建必要的数据绑定等时调用的生命周期钩子.
+
+
+> `Vue` 计算属性
+
+在模板中绑定表达式很方便, 但是只用于简单的操作, 模板只是为了描述视图的结构, 太多的逻辑会让模板过重且难以维护, 如果需要多个表达式的逻辑, 就可以使用 `计算属性` .
+
+
+```
+  <div id='example'>
+    a={{ a }}, b = {{ b }}
+  </div>
+
+  let vm = new Vue({
+    el: '#example',
+    data: {
+      a: 1
+    },
+    computed: {
+      b: function () {
+        return this.a + 1
+      }
+    }
+  })
+
+  // result
+  a = 1, b = 2
+
+
+```
+
+> 计算属性 vm.$watch
+
+Vue.js 提供了一个方法 `$watch` , 用于观察 Vue 实例上的数据变动.
+
+```
+  <div id='example'>{{ fullName }}</div>
+
+  let vm = new Vue({
+    el: '#example',
+    data: {
+      firstName: 'Frank',
+      lastName: 'Wu',
+      fullName: 'Frank Wu'
+    }
+  })
+
+  vm.$watch('firstName', function (val) {
+    this.fullName = val + ' ' + this.lastName
+  })
+  
+  vm.$watch('lastName', function (val) {
+    this.fullName = this.firstName + ' ' + val
+  })
+```
+
+如果用 `computed` 计算属性的话是这样的:
+
+```JavaScript
+
+  let vm = new Vue({
+    el: '#example',
+    data: {
+      firstName: 'Frank',
+      lastName: 'Wu'
+    },
+    computed: {
+      fullName: function () {
+        return this.firstName + ' ' + this.lastName
+      }
+    }
+  })
+
+```
+
+
+
+
+Directive(指令), watch(观察Vue实例上的数据变动), 
