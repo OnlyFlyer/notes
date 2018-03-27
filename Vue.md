@@ -125,6 +125,72 @@ Vue.js 提供了一个方法 `$watch` , 用于观察 Vue 实例上的数据变�
 ```
 
 
+> `props`
+
+        1. 使用 `props` 传递数据
+
+组件实例的作用域是孤立的. 不能在自组件的模板里面直接引用副组件的数据, 需要 使用 `props` 把数据传递给子组件
+
+`props` 是组件数据的一个字段, 期望从父组件传下来, 子组件需要显式地用 `props` 选项声明 `props`:
+
+```JavaScript
+
+  Vue.component('child', {
+    props: ['msg'],
+    template: '<span>{{ msg }}</span>'
+  })
+
+```
+
+然后可以就可以传入数据了: 
+
+`<child msg='morning!'></child>`
+
+props 默认是单向绑定的, 当父组件的属性变化时, 传递给子组件, 但是不会反过来, 这是为了防止子组件无意修改了父组件的状态--这会让应用的数据流难以理解. 不过, 也可以使用 `.sync` 或 `.once` 绑定修饰符显式地强制双向或单次绑定：
+
+```HTML
+
+  <!-- 默认的单向绑定 -->
+  <child :msg='parentMsg'></child>
+
+  <!-- 双向绑定 -->
+  <child :msg.sync='parentMsg'></child>
+
+  <!-- 单次绑定 -->
+  <child :msg.once='parentMsg'></child>
+
+```
+
+**注:** 若 props 是一个对象或数组, 是按引用传递. 在子组件内修改会影响父组件的状态, 不管使用哪种绑定类型.
+
+        2. props 验证
+
+  组件可以为 props 指定验证要求, 当组件给其他人使用时这很有用, 因为这些验证要求构成了组件的 API, 以确保其他人正确地使用组件, 此时 props 的值是一个对象, 包含验证要求:
+
+  ```JavaScript
+  
+    Vue.component('example', {
+      props: {
+        // 基础类型检测, `null` 表示任何类型都可以
+        propA: Number,
+        propM: [String, Number],
+        // 必须是 String 类型
+        propB: {
+          type: String,
+          required: true
+        },
+        // Number 类型, 默认值为 100
+        propC: {
+          type: Number,
+          default: 100
+        }
+      }
+    })
+  
+  
+  ```
+
+
 
 
 Directive(指令), watch(观察Vue实例上的数据变动), 
