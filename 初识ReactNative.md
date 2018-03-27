@@ -113,17 +113,129 @@
 
 生命周期的概念广泛运用于各行各业, 一般说来, 生命周期是指一个不可逆的单方向的过程, 而软件开发的生命周期则稍有不同, React 组件的生命周期是根据 React 在挂载前, 挂载后, 渲染, 卸载..这些不同的阶段执行的钩子函数, 当渲染后的组件需要更新时, React 会再一次渲染页面. 基于这种特殊的执行方式, 可以将 React 生命周期分成两个大的阶段: 组件挂载或卸载时, 组件更新时.
 
+
+```JavaScript
+import React from 'React'
+
+class ComponentB extends React.Component {
+  defaultProps = {
+    str: 'Hello',
+    num: 1
+  }
+  constructor(props) {
+    super(props)
+    this.state = {
+      str: 'hello'
+      }
+  }
+
+  componentWillMount() {
+    console.log('this is componentWillMount')
+  }
+
+  componentDidMount() {
+    console.log('this is componentDidMount')
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('this is componentWillReceiveProps')
+  }
+
+  shouldComponentUpdate() {
+    console.log('this is shouldComponentUpdate')
+    return true // 此处返回 true 则页面刷新, 返回 false 则不刷新
+  }
+
+  componentWillUpdate() {
+    console.log('this is componentWillUpdate')
+  }
+
+  componentDidUpdate() {
+    console.log('this is componentDidUpdate')
+  }
+
+  componentWillUnmount() {
+    console.log('this is componentWillUnmount')
+  }
+  render() {
+    const { num } = this.props
+    const { str } = this.state
+    console.log('this is render')
+      return(
+        <div>
+          <span>{`props:${parseInt(num)},state:${str}`}</span>
+        </div>
+      )
+  }
+}
+
+ReactDom.render(
+  <ComponentB></ComponentB>,
+  document.getElementById('container')
+)
+
+```
+
 1. 常见的生命周期函数
 
+
+  componentWillMount
+  componentWillReceiveProps
+  showldComponentUpdate
+  componentWillUpdate
+  componentWillUnmount
+  render
+  componentDidUpdate
 
 2. 挂载过程
 
 
+  组件挂载是最基本的过程, 主要包括一些变量的声明, 数据的获取等等一系列组件状态的初始化, 如下面的 `例2.3.4`:
+
+  ```JavaScript
+  
+    import React, { PropTypes } from 'React'
+
+    class ComponentA extends React.Component{
+      static defaultProps = {
+        // 默认属性
+      }
+
+      static propTypes = {
+        // 类型检查
+      }
+
+      constructor (props) {
+        super(props)
+        this.state = {}
+      }
+
+      componentWillMount () {}
+
+      componentDidMount () {}
+
+      render () {
+        return (
+          <div> template </div>
+        )
+      }
+    }
+  
+  ```
+在上面的 `例3.35.6.7` 中, defaultProps 之前就已经了解过了, 是默认的 props 值, 当父组件未传递或者子组件未收到时使用的值, 而 propTypes 则是跪了类型检查, 由于 JavaScript 是弱类型的脚本语言, 因此需要规范传递的 prop 值的类型, propTypes 且是 FaceBook 官方出的类型检查第三方包.
+
+在 `例23.5.5.` 中, 有 componentWillMount 和 componentDidMount 两个生命周期函数, 从字面上就很好理解, 前者是在 挂载前调用, 后者是在 挂载后调用, 分别代表了渲染前后的时刻. 这两个生命周期函数只会在组件初始化的时候运行一次, 若在 componentWillMount 里面执行 `this.setState({})` 方法, 组件同样会更新 state, 但是组件只会渲染一次, 因此在组件挂载前这个生命周期函数里执行 `this.setState({})` 是无意义的, 可以将其放在 `this.state` 里面. 若在componentDidMount 里面调用 `this.setState({})` 方法则组件会重新渲染一次, 也就是重新走一遍生命周期, 这让组件在初始化过程就渲染了两次组件
+
+
 3. 卸载过程
+
+组件在卸载的时候比较简单, 只有 componentWillUnmount 这一个函数, 在这个函数中, 常会执行如事件回收等的操作
 
 
 4. 组件更新
 
+
+当父组件的状态发生变化, 从而向子组件传递 props, 或者子组件自身调用了 `this.setState({})` 方法的时候, 组件自身的 state 就会发生变化, 就会引起组件更新. 更新会执行 shuldComponentUpdate, componentWillUpdate, render, componentDidUpdate 这几个函数, 其中, shouldComponentUpdate 接受更新的props 和state , 返回的是一个 Boolean 的值, 主要是为了判断所引发的改变是否值得更新整个组件, 当返回 true则需要更新组件, 返回 false 则不需要更新组件
 
 5. 小结
 ## 本章小结
