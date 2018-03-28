@@ -249,7 +249,22 @@ props 默认是单向绑定的, 当父组件的属性变化时, 传递给子组�
     },
     methods: {
       addToList () {
-        if (this.msg.trim()) {}
+        if (this.msg.trim()) {
+          this.$dispatch('child-msg', this.msg)
+          this.msg = ''
+        }
+      }
+    }
+  })
+
+  let parent = new Vue({
+    el: '#example',
+    data: {
+      message: []
+    },
+    events: {
+      'child-msg': function (msg) {
+        this.message.push(msg)
       }
     }
   })
