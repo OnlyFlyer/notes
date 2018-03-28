@@ -189,6 +189,85 @@ props 默认是单向绑定的, 当父组件的属性变化时, 传递给子组�
   
   ```
 
+  ## 组件
+
+创建组件的构造器: `Vue.extend()`
+
+注册组件: `Vue.component()`
+
+
+```JavaScript
+
+  // 创建组件
+  let MyComponent = Vue.extend({
+    // ...
+    props: ['aa', 'bb'],
+    template: '<div>{{ aa }}{{ bb }}</div>'
+  })
+
+  // 注册组件
+  Vue.component('my-component', constructor)
+
+  // 使用组件
+  <my-component></my-component>
+```
+
+`Vue` 的模版是 DOM 模板, 使用浏览器原生的解析器而不是自己实现一个
+
+
+```
+  // 动态 props
+  <div>
+    <input type='text' v-model='parentMsg'/>
+    <child :my-message='parentMsg'></child>
+  </div>
+
+
+```
+
+```JavaScript
+
+  // 子组件
+  <template id='child-template'>
+    <input type='text' v-model='msg' />
+    <button v-on.click='addToList'>click me</button>
+  </template>
+
+  // 父组件
+  <div id='example'>
+    <p>Messages: {{ message | json }}</p>
+    <child></child>
+  </div>
+
+  // 注册子组件
+  Vue.component('child', {
+    template: '#child-template',
+    data () {
+      return {
+        msg: 'Hello'
+      }
+    },
+    methods: {
+      addToList () {
+        if (this.msg.trim()) {}
+      }
+    }
+  })
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
 directive(指令), watch(观察Vue实例上的数据变动), 
 
 重绘(redraw): 是一个元素的外观变化所引发的浏览器行为；例如改变visibility、outline、背景色等属性.
