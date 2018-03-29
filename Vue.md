@@ -444,6 +444,155 @@ Vue 默认 `异步` 更新 DOM, 当观察到数据变化时, Vue 开始一个�
 如: 设置 vm.a = 2, DOM 不会立即更新, 而是在下一次事件循环清空队列时更新.
 
 
+Vue 的计算属性不是只会使用 `getter`, 计算属性会持续追踪它的响应依赖, 更新它的依赖列表并缓存结果, 只有当其中的依赖发生了变化, 缓存的结果才无效, 因此, 只要依赖不发生变化, 访问计算属性会直接返回缓存的结果, 而不是调用 getter
+
+```JavaScript
+
+  let vm = new Vue({
+    data: {
+      msg: 'Hi!'
+    },
+    computed: {
+      timeStamp () {
+        return Date.now() + this.msg
+      }
+    }
+  })
+
+```
+
+计算属性 `timeStamp` 只有一个依赖: `vm.msg`, Date.now() 不是响应依赖, 因为它和 Vue 的数据观察系统无关. 因而, 在访问 `vm.timeStamp` 时会发现时间戳不变, 除非 `vm.msg` 变化了.
+
+
+## 自定义指令
+
+`Vue.directive(id, defintion)` 方法注册一个全局的自定义指令
+
+```JavaScript
+  <div v-my-directive='val' aa='haha' bb='hehe'>div1</div>
+
+  Vue.directive('my-directive', {
+    // 接受一个数组, 指定一个特性列表
+    params: ['aa', 'bb', ...],
+    // 只调用一次, 在指令第一次绑定到元素上时调用
+    bind () {
+      // 添加事件监听..
+      console.log(this.params.aa) // -> haha
+      console.log(this.params.bb) // -> hehe
+    },
+    // 在 bind 之后以初始值为参数第一次调用, 之后每当绑定值变化是调用, 参数为新值和旧值
+    update () {
+      // 指令接受的值更新的操作
+    },
+    // 调用一次, 在指令从元素上解绑时调用
+    unbind () {
+      // 删除事件监听..
+    }
+  })
+
+  // 前面加 v-
+  <div v-my-directive='val'>div2</div>
+
+  // 简写
+  Vue.directive('my-directive', (val) =>{
+    // 此函数为 update
+  })
+
+```
+
+## 自定义过滤器
+
+  `Vue.filter()` , 该全局方法注册一个自定义过滤器, 它接受两个参数: 过滤器ID 和 过滤器函数
+
+```JavaScript
+
+  Vue.filter('reverse', (value) =>
+    return value.split('').reverse()().join('')
+  )
+
+  // qwert -> trewq
+  <p v-text=" 'qwert' | reverse"></p>
+
+```
+
+## 混合(mixin)
+
+可以为组件提供分布复用功能, 混合对象可以包含任意的组件选项
+
+
+```JavaScript
+
+  let myMixin = {
+    created () {
+      this.hello()
+    },
+    methods: {
+      hello () {
+        console.log('hello from mixin!')
+      }
+    }
+  }
+
+  let Component = Vue.extend({
+    mixins: [myMixin]
+  })
+
+  let component = new Component() // -> hello from mixin!
+
+```
+
+## 全局混合
+
+```JavaScript
+
+  Vue.mixin({
+    created () {
+      let myOption = this.$option.myOption
+      if (myOption) {
+        console.log(myOption)
+      }
+    }
+  })
+
+  new Vue({
+    myOption: 'hello!'
+  })
+  // -> hello!
+
+```
+
+**慎用全局混合, 因为它会影响到每个创建的Vue实例, 包括第三方组件**
+
+
+
+## 插件
+
+```JavaScript
+
+  myPlugin.install = function (Vue, options) {
+    // 全局方法或属性
+    Vue.myGlobalMethod = function () {}
+
+    // 全局指令
+    Vue.directive('my-directive', {})
+
+    // 实例方法
+    Vue.prototype.$myMethod = function () {}
+  }
+
+
+  // 使用插件
+
+  Vue.user(myPlugin)
+```
+
+
+
+
+
+---
+---
+---
 
 directive(指令), watch(观察Vue实例上的数据变动), 
 
