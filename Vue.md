@@ -1,5 +1,7 @@
 # Vue 总结
 
+`Vue` 框架最关键的是双向绑定, 而双向绑定就两句话: 视图(View) 和 JavaScript 对象(Model) 任意一方有了变化另一方都会自动更新; 而两者之间靠声明式的 `directive` 绑定相互关系
+
 1. 数据驱动
 
 Vue.js 的核心是一个响应的数据绑定系统, 它让 `数据` 和 `DOM` 保持同步很简单. 在使用 `Vue` 开发项目的时候, 我们在普通 `HTML` 模版中使用特殊的语法将 `DOM` 绑定 到底层数据, 一旦创建绑定后, `DOM` 将与数据保持同步. 这样的话我们应用中的逻辑几乎都是直接修改数据而不必与 `DOM` 更新搅在一起, 让代码更容易理解和维护.
@@ -186,7 +188,7 @@ props 默认是单向绑定的, 当父组件的属性变化时, 传递给子组�
         }
       }
     })
-  
+    // 如果 props 验证失败, 就不会在组件上面设置这个值, 而且会抛出一条警告
   ```
 
   ## 组件
@@ -269,17 +271,174 @@ props 默认是单向绑定的, 当父组件的属性变化时, 传递给子组�
     }
   })
 
+```
+
+> **父组件模板的内容在父组件作用域内编译, 子组件模板的内容在子组件作用域内编译**
 
 
+**动态组件**
 
+多个组件可以使用同一个挂载点, 动态切换, 使用保留的 `<component>` 元素, 动态地绑定到它的 `is` 特性.
+
+```JavaScript
+  new Vue({
+    em: 'body',
+    data: {
+      currentView: 'home'
+    },
+    components: {
+      home: {
+        template: '<div>{{ 'this is home component' }}</div>'
+      },
+      posts: {
+        template: '<div>{{ 'this is posts component' }}</div>'
+      },
+      archive: {
+        template: '<div>{{ 'this is archive component' }}</div>'
+      }
+    }
+  })
+
+  <component :is='currentView'></component>
 
 ```
 
+`v-for` 不能够传递数据给组件, 因为组件的作用域是孤立的, 如果传递数据给组件, 应当使用 props:
+
+```JavaScript
+  
+  <my-component v-for='item in items' :item='item' :index='$index'></my-component>
+
+  // 若将 `item` 注入组件会导致组件跟当前的 `v-for` 耦合, 显示声明数据来自哪里可以让组件复用在其他地方.
+```
+
+**可复用组件**
+
+一次性组件跟其他组件紧密耦合没关系, 但可复用组件应当定义一个清晰的公开接口, 一般有三个部分: props, events, slot
+
+  - `prop` 允许外部环境传递数据给组件
+  - `events` 允许组件触发外部环境的 `action`
+  - `slot` 允许外部环境插入内容到组件的视图结构内
+
+再使用 `v-bind` 和 `v-on` 的简写语法, 模板的缩进清楚而且简洁
+
+```HTML
+
+  <component-a>
+    :foo='aa'
+    :bar='bb'
+    @event-a='doA'
+    @event-b='doB'
+    <img slot='icon' src=''>
+    <p slot='main-text'>Hello!</p>
+  </component-a>
+
+```
+
+**异步组件**
+
+Vue 允许将组件定义为一个工厂函数, 动态解析组件的定义, 渲染的时候触发工厂函数, 并且将结果缓存起来, 用于后面的再次渲染
+
+```JavaScript
+
+  Vue.component('async-example', (resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        template: '<div>{{ 'I am async component!' }}</div>'
+      })
+    }, 1000)
+  })
+
+```
+
+工厂函数接收一个 `resolve` 回调, 在收到从服务器下载的组件定义时调用
+
+```JavaScript
+
+  Vue.component('async-component', resolve => {
+    require(['./component/component-a'], resolve)
+  })
+
+```
+
+**响应式原理**
+
+![](./img/vue-data.png)
 
 
 
+1. 追踪变化
+
+  将一个普通对象传给 Vue 实例作为它的 `data` 选项, Vue 将遍历它的属性, 用 Object.defineProperty 将他们转为 getter/setter, 这是 ES5 的特性, 因此 Vue 不支持 IE8 以及更低的版本
+
+  每个指令/数据绑定都有一个对应的 **watcher** 对象, 在计算过程中它把属性李璐为依赖, 当依赖的 setter 被调用时, 会出发 watcher 重新计算, 这就会导致它的关联指令更新 `DOM`
 
 
+2. 数据变化检测问题
+
+  Vue 不能检测到对象属性的添加或删除, 因为 Vue 在初始化实例时将属性转换为 getter/setter, 因此在 `data` 对象上 Vue 才能转换为响应的.
+
+  ```JavaScript
+  
+    let data = {
+      a: 1,
+      b: 2
+    }
+
+    let vm = new Vue({
+      data
+    })
+
+    vm.b = 2 // -> vm.b 和 data.b 是响应的
+
+    data.c = 3
+    // vm.c 和 data.c 不是响应的
+  
+  ```
+
+不过, 在 Vue 实例创建之后添加属性使其保持响应特性是常常碰到的情况, 因此 Vue 提供一个全局的方法 `Vue.set(object, key, value)` 来提供支持. 
+
+
+对于普通数据对象, 可以使用全局方法 `Vue.set(object, key, value)`
+
+```JavaScript
+
+  Vue.set(data, 'c', 3)
+  // 此时的 vm.c 与 data.c就是响应的, 任意一个改变都会影响到另一个的变化
+
+``` 
+
+不过不建议这样用, 因为 `data` 对象更像是组件状态的模式, 在它上面声明所有的属性让组件代码更易于理解.
+
+添加一个顶级响应属性会强制所有 `watcher` 重新计算, 因为之前没有, 没有 `watcher` 追踪它, 这样做性能一般是可以接受的, 但还是尽量不要这样使用, 可以用下面这种方式代替:
+
+
+```JavaScript
+
+  let vm = new Vue({
+    data: {
+      msg: ''
+    }
+  })
+
+  vm.msg = 'msg is changed !'
+
+```
+
+如果向已有对象上添加属性,如使用 `Object.assign()` 或 `_.extend`
+ 添加属性, 这些添加的新的属性是不会出发更新的, 这时候应该重新创建一个新的对象, 包含愿对象的属性和新的属性.
+
+ ```JavaScript
+ 
+  this.obj = Object.assign({}, this.obj, {d: 4, e: 5})
+ 
+ ```
+
+## 异步更新队列
+
+Vue 默认 `异步` 更新 DOM, 当观察到数据变化时, Vue 开始一个更新队列, 将一个事件循环内所有的数据变化缓存, 若一个 `watcher` 被多次出发, 只会推入一次到队列中, 等到下一次事件循环, Vue 将清空队列, 只进行必要的 DOM 更新, 内部异步队列优先使用 `MutationObserver`, 如果不支持则使用 `setTimeout(fn, 0)`
+
+如: 设置 vm.a = 2, DOM 不会立即更新, 而是在下一次事件循环清空队列时更新.
 
 
 
