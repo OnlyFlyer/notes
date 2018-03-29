@@ -24,32 +24,60 @@
       1. Flex 架构比较优雅, 简洁, 中心化控制, 让所有的请求与改变都只能通过 action 发出, 并由 dispatcher 来分发, 这样的话 View 不仅 很简洁明了, 而且还不用关心过多的逻辑而导致高度耦合, 只需要关心传入的数据, 传统的 MVC 架构虽然分层很明确, Model , View, Controller, 三者各司其职, Controller 控制器负责将 数据层(Model) 和 视图层(View) 连在一起, 但是由于 Controller 常常因为逻辑太多而造成维护不便, 而且过重的页面逻辑不利于追查问题.
       2. 此外, Flux 把 action 做了统一的归纳, 提高了系统抽象程度, 不管 action 从客户端还是服务端还是应用本身的行为, 对于我们来说, 它只是一个动作而已, 因此分的太开不一定是好事, 也就是常说的低内聚, 高耦合. 这一点, , Flux 要优雅的多
 
-  4. ...
-  5. ...
-  6. 小结
+  4. 小结
 
 ## Redux架构
 
   Flux 为了解决 MVC 架构出现的逻辑过重且互相牵连导致高耦合的缺点而设计出了基于 dispatcher的单向数据流的前端架构, 受到了越来越多的关注, 但是, Flux 本身也存在着一些问题, 因此, 很多编程爱好者尝试这优化和扩展 Flux 架构, 比如 reflux, fluxxor等等, 在众多新的解决方案当中, Redux 脱颖而出, 而且几个月内就在 Github 上面获得了近万的 star.
 
   1. 什么是 Redux?
+
+![](./important/react-redux.jpg)
+
+
+
+
+
+  Redux 可以理解成一个库, 但是思想与 Flux 类似, 只是解决了 Flux 的一些缺陷, 去除了 Flux 中许多冗余的部分, 同时引入了函数式编程的思想, Redux 将自己定位成一个容器, 提供一些 API 让我们用 reducer创建store, 更新 store 中的数据或获取 store 中最新的状态.
+
+
   2. Redux 三大原则
-      1. xc
-      2. xc
-      3. cx
+      1. 单一数据源
+
+  Redux 的思想是一个应用永远只有一个唯一的数据源, 并将一个应用的所有的状态都保存在一个对象中, 这样就可以随时获取整个应用的状态进行持久化. 
+
+
+      2. 状态只读
+
+  在 Flux 中为了防止数据逻辑冗乱, 负责保存数据的 store 只有 getter 没有 setter, 而在 Redux 中, 根本没有 store, reducer 取代了它, reducer 根据当前触发的 action 对当前应用的 state 进行迭代.
+      3. 状态修改由纯函数完成
+
+  在 Redux 中, reducer 确定状态的修改, 每一个 reducer 都是纯函数, 接受一个输入必定会有输出. 这样设计的好处在于 reducer 对状态的修改变得更加简单、存粹、可测试
   3. Redux核心 API
-  4. Redux 异步流
-  5. Redux 与路由
-  6. 小结
-## 高阶架构
-没写
-  1. ...
-  2. ...
-  3. ...
-  4. ...
-  5. ...
-  6. 小结
+
+
+```JavaScript
+
+  import { createStore } from 'redux'
+  const store = createStore(reducers)
+
+```
+通过 createStore 方法创建的 store 是一个对象, 本身包含四个方法
+
+  - getState()  获取 store 中当前的状态
+  - dispatch(action) 分发一个 action, 并返回这个 action, 这是唯一能够改变 store 中数据的方式
+  - subscribe(listener) 注册一个监听器, 它在 store 发生变化时被调用
+  - replaceReducer(nextReducer) 更新当前 store 里面的 reducer
+
+我们常用到的是 getState() 和 dispatch()
+  4. 小结
+
+
 ## 本章小结
   1. ...
   2. ...
   3. ...
+
+
+
+[2]陈屹. 深入React技术栈....
