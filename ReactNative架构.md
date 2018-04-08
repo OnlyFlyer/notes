@@ -1,8 +1,8 @@
 # ReactNative架构
   没写
 ## Flux架构
-写完了, 不过可以添加一些
 
+在 Flux, Redux 等应用程序架构出现之前, 我们了解的更多的应该是前端 MV* 架构, 不得不说, 是 React 和 React Native 带火了 Flux, Redux. 那么 Flux, Redux 到底是什么呢? 本章将与您一起探讨.
 
   1. Flux的解决方案
       1. Flux 同样是 FB 工程师提出的, Flux 主要是针对前端 MVC 框架的局限总结出来的基于 dispatcher 的前端应用架构模式.
@@ -11,7 +11,14 @@
       3. Flux 作为一种全新的前端架构方式给我们带来了思想上的冲击与转变, Flux 强调单向数据流, 强调谨慎可追溯的数据变动, 这些约束和设计都使愈来愈复杂的前端应用不会失去清晰的逻辑和架构.
 
 ![](./important/react-flux.jpg)
+
   2. Flux 的概念
+
+一个完整的 Flux 应用由三部分组成, 分别是: store, view, dispatcher. 在这其中, store 负责储存、响应、更新数据, 而 view 呢则掌管 store 里面的数据, 并使用这些数据渲染页面, 而dispatcher 则类似于事件分发机, 负责分发事件.
+
+![](./important/react-fluxx.jpg)
+
+
       1. Flux 是 FackBook 用来创建客户端 web 应用的一种架构模式, 使用单向数据流方式实现了 React 组件的复合和通信. 一个 Flux 应用由三大部分组成: dispatcher, store, view, dispatcher 负责分发时间, store 负责保存数据, view 负责
       2. 说到架构模式, MVVM, MVC这些就浮现出来了, Flux 架构和 MVC 架构比较相似, 但是在 Flux 中没有一个明确的 Controller, 而是由一个 controller-view, 将 view 和 store 绑定在一起, 因此没有 MVC 中 controller 特别复杂的逻辑
       3. ...
@@ -34,19 +41,12 @@
 
 ![](./important/react-redux.jpg)
 
-
-
-
-
   Redux 可以理解成一个库, 但是思想与 Flux 类似, 只是解决了 Flux 的一些缺陷, 去除了 Flux 中许多冗余的部分, 同时引入了函数式编程的思想, Redux 将自己定位成一个容器, 提供一些 API 让我们用 reducer创建store, 更新 store 中的数据或获取 store 中最新的状态.
-
 
   2. Redux 三大原则
       1. 单一数据源
 
   Redux 的思想是一个应用永远只有一个唯一的数据源, 并将一个应用的所有的状态都保存在一个对象中, 这样就可以随时获取整个应用的状态进行持久化. 
-
-
       2. 状态只读
 
   在 Flux 中为了防止数据逻辑冗乱, 负责保存数据的 store 只有 getter 没有 setter, 而在 Redux 中, 根本没有 store, reducer 取代了它, reducer 根据当前触发的 action 对当前应用的 state 进行迭代.
@@ -54,7 +54,6 @@
 
   在 Redux 中, reducer 确定状态的修改, 每一个 reducer 都是纯函数, 接受一个输入必定会有输出. 这样设计的好处在于 reducer 对状态的修改变得更加简单、存粹、可测试
   3. Redux核心 API
-
 
 ```JavaScript
 
@@ -71,7 +70,6 @@
 
 我们常用到的是 getState() 和 dispatch()
   4. 小结
-
 
 ## 本章小结
   1. ...
