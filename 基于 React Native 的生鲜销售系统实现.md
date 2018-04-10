@@ -211,7 +211,526 @@ mock 数据:
 ```
 
   #### 总体架构
-  #### 功能结构
+  #### 功能代码
+
+    路由
+
+    ```JavaScript
+    
+    /**
+     * @desc    路由梳理
+     * @author  吴涛
+     * @date    2017/12/01
+     */
+    import Mine from './mine_component'
+    import PersonalDetails from './personal_details'
+    import StoreHouseDetails from './store_house_details'
+    import CategoryDetails from './category_details'
+    import CategoryList from './category_list'
+    import RoleInfo from './role_info'
+    import SubordinateInfo from './subordinate_info'
+    import ToDownload from './to_download'
+
+    export {
+      Mine,
+      PersonalDetails,
+      StoreHouseDetails,
+      CategoryDetails,
+      CategoryList,
+      RoleInfo,
+      SubordinateInfo,
+      ToDownload
+    }
+    
+    ```
+
+    选择到货时间
+
+    ```JavaScript
+      <Page
+        title='选择到货时间'
+        pageLoding={false}
+        barStyle='light-content'
+        leftContent={this._renderHeaderLeft()}
+      >
+        <Calendar
+          minDate={minSelectDate}
+          maxDate={maxSelectDate}
+          selectedDate={selectedDate}
+          onDateChange={this._goToChoiceProvider}
+          nextTitle={'下一月'}
+          previousTitle={'上一月'}
+          selectedDayColor='#1d84d6'
+          selectedDayTextColor='#ffffff'
+          scaleFactor={375}
+          textStyle={{fontSize: 13, fontFamily: 'Dinpro'}}
+          weekdays={['周日', '周一', '周二', '周三', '周四', '周五', '周六']}
+          months={['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']}
+        />
+      </Page>
+
+      /**
+        * @desc   跳转到选择供应商页
+        * @author    吴涛
+        * @date:   2017/11/23
+        */
+      _goToChoiceProvider = (deliveryDate) => {
+        this.navigator().push('ChoiceProvider', {
+          deliveryDate,
+          refresh: this.getRouteData('refresh')
+        })
+      }
+    ```
+    选择供应商
+
+    ```JavaScript
+      <Page
+        title='选择供应商'
+        pageLoading={pageLoading}
+        leftContent={this._renderHeaderLeft()}
+        rightContent={this._renderHeadRight()}
+        barStyle='light-content'
+      >
+        <SearchInput changeText={this._searchKeywords} />
+        <FlatList
+          data={copyRes}
+          ListEmptyComponent={this._renderEmpty()}
+          renderItem={this._renderProviderList}
+          keyExtractor={(item, index) => index}
+        />
+        <ModalCatSpinner
+          ref={(view) => { this._catSpinnerModal = view }}
+          catBaseVOList={catlist}
+          btnCatItem={this._btnCatItem}
+        />
+      </Page>
+    
+      /**
+        * @Description: 供应商列表
+        * @author       吴涛
+        * @date         2017/11/23
+      */
+      _renderProviderList = ({item}) => {
+        const arrowPath = new Path().moveTo(8, 3).lineTo(15, 9.5).lineTo(8, 16)
+        return (
+          <TouchableOpacity
+            style={s.clickProviderListContainer}
+            onPress={this._goToChoiceSku(item)}
+          >
+            <Text style={{flex: 1}} fontSize='$T15' color='$N10'>{item.supplierName}</Text>
+            <Text fontSize='$T13' color='$N12' style={{marginLeft: 5}}>{item.confirmEndTimeStr}</Text>
+            <Surface width='17' height='20'>
+              <Shape d={arrowPath} stroke='rgba(188, 190, 201, 1)' strokeWidth='1' />
+            </Surface>
+          </TouchableOpacity>
+        )
+      }
+
+      /**
+      * @Description: 跳转到选择sku页面
+      * @author       吴涛
+      * @date         2017/10/25
+      */
+      _goToChoiceSku = (item) => () => {
+        this.navigator().push('ChoiceSkuList', {
+          provider: item.supplierName,
+          deliveryDate: this.getRouteData('deliveryDate'),
+          supplierId: item.supplierId,
+          refresh: this.getRouteData('refresh')
+        })
+      }
+    
+    ```
+
+    选择SKU
+
+    ```JavaScript
+    
+      <Page
+        title={'选择SKU'}
+        pageLoading={pageLoading}
+        leftContent={this._renderHeaderLeft()}
+      >
+        <View style={s.itemTitle}>
+          <Text color='$N11' fontSize='$T13'style={{flex: 1}}>供应商</Text>
+          <Text color='$N11' fontSize='$T13'>{this.getRouteData('provider')}</Text>
+        </View>
+        <FlatList
+          refreshControl={this._getRefreshControl()}
+          data={skulist}
+          renderItem={this._renderItem}
+          ListEmptyComponent={this._renderEmpty()}
+          keyExtractor={(item, index) => index}
+          />
+        {this._renderBottomView()}
+      </Page>
+
+      /**
+      * @Description: 底部view
+      * @author       chengfy@songxiaocai.com
+      * @date         17/7/17 19:50
+      */
+      _renderBottomView=() => (
+        <View style={s.action_view}>
+          <Text fontSize='$T13' color='$N11' >已选</Text>
+          <Text fontSize='$T13' color='#FF7043' style={{ marginLeft: 2, marginRight: 2 }} >{this.state.totalSkuNum ? `${this.state.totalSkuNum}` : '0'}</Text>
+          <Text fontSize='$T13' color='$N11' style={{ flex: 1 }} >个商品</Text>
+          <TouchableOpacity
+            onPress={this._goChoiceStoreHouse}
+            style={s.btn_next}
+          >
+            <Text fontSize='$T15' color='white' >下一步</Text>
+          </TouchableOpacity>
+        </View>
+      )
+
+    
+      /**
+      * @desc      跳转到选择服务站页面
+      * @author       吴涛
+      * @date         17/7/17 19:57
+      */
+      _goChoiceStoreHouse=() => {
+        const skuIds = []
+        const checkedSku = []
+        if (!this.state.skulist) {
+          return
+        }
+        this.state.skulist.map((item) => {
+          if (item.checked) {
+            skuIds.push(item.skuId)
+            checkedSku.push(item)
+          }
+          return null
+        })
+        if (skuIds.length === 0) {
+          global.Toast.show('请至少选择一个商品')
+          return
+        }
+        this.navigator().push('ChoiceStorehouseList', {
+          provider: this.getRouteData('provider'),
+          deliveryDate: this.getRouteData('deliveryDate'),
+          directTime: this.directTime,
+          refresh: this.getRouteData('refresh'),
+          skuIds,
+          skulist: checkedSku,
+          supplierId: this.getRouteData('supplierId')
+        })
+      }
+    
+    ```
+
+    选择服务站
+
+    ```JavaScript
+      <Page
+        title={'选择服务站'}
+        pageLoading={this.state.pageLoading}
+        leftContent={this._renderHeaderLeft()}
+      >
+        <SearchInput changeText={this._searchKeywords} />
+        <FlatList
+          refreshControl={this._getRefreshControl()}
+          data={this.state.copyPickHouseBases}
+          ListEmptyComponent={this._renderEmpty()}
+          renderItem={this._renderItem}
+          keyExtractor={(item, index) => index}
+        />
+        {this._renderBottomView()}
+      </Page>
+
+    ```
+
+    确认直发计划
+
+    ```JavaScript
+      <Page
+        title='完善销售计划'
+        pageLoading={this.state.pageLoading}
+        leftContent={this._renderHeaderLeft()}
+      >
+        <ScrollView>
+          <View
+            ref={(ref) => { this.scroll = ref }}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ flex: 1 }}
+          >
+            <View style={{ marginBottom: 10 }}>
+              <View style={s.row}>
+                <Text fontSize='$T15' color='$N10'>计划名称：</Text>
+                <View style={s.right}>
+                  <Text style={s.directStyle}>{salePlanName}</Text>
+                </View>
+              </View>
+              <View style={s.row}>
+                <Text fontSize='$T15' color='$N10'>供应商：</Text>
+                <View style={s.right}>
+                  <Text fontSize='$T15' color='$N11' style={[s.rightLabel, { flex: 1 }]}>{provider ? this.state.provider : '-'}</Text>
+                </View>
+              </View>
+              <View style={s.row}>
+                <Text fontSize='$T15' color='$N10'>客户要求到货日期：</Text>
+                <Text fontSize='$T15' color='$N11' style={s.rightLabel}>{str.date(this.getRouteData('deliveryDate')).format('y m-d')}</Text>
+              </View>
+              <View style={s.row}>
+                <Text fontSize='$T15' color='$N10' style={{flex: 1}}>销售提报截止时间：</Text>
+                <View style={s.right}>
+                  <Image style={{width: 16, height: 16}} source={Icon.IconCalendar} />
+                  <DatePicker
+                    style={s.datePicker}
+                    date={reportArriveTime ? new Date(Number(reportArriveTime)) : undefined}
+                    mode='datetime'
+                    androidMode='default'
+                    format={'MM-DD HH:mm'}
+                    confirmBtnText='确定'
+                    cancelBtnText='取消'
+                    showIcon={false}
+                    showMode='datetimeWithoutYear'
+                    minDate={reportArriveStartTime ? new Date(Number(reportArriveStartTime)) : undefined}
+                    maxDate={reportArriveEndTime ? new Date(Number(reportArriveEndTime)) : undefined}
+                    customStyles={{
+                      dateText: s.dateText,
+                      dateInput: s.dateInput,
+                      placeholderText: s.placeholderText,
+                      btnTextConfirm: s.btnTextConfirm
+                    }}
+                    onDateChange={this._changeEndTime}
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={s.Skumenu}>
+              <Text fontSize='$T13' color='$N12'>商品名</Text>
+              <View style={s.right}>
+                <Text fontSize='$T13' color='$N12'>预估售价</Text>
+              </View>
+            </View>
+            { this._renderContent() }
+            <View style={s.selectedStoreHouse}>
+              <Text fontSize='$T13' color='$N12'>已选服务站({this.getRouteData('totalStorehouseNum')}个)</Text>
+              <TouchableOpacity style={s.right} onPress={() => {
+                const cb = this.getRouteData('cb')
+                typeof cb === 'function' && cb({
+                  reportArriveTime: this.state.reportArriveTime,
+                  itemMap: this.state.itemMap,
+                  listObj: this.state.listObj,
+                  skulist: this.getRouteData('skulist')
+                })
+                this.navigator().pop()
+              }}>
+                <Text color='$B1'>编辑所选</Text>
+              </TouchableOpacity>
+            </View>
+            {this._renderStoreHouse()}
+          </View>
+        </ScrollView>
+        {this._renderBottom()}
+        {this._renderModal()}
+      </Page>
+    ```
+
+
+    个人主页
+
+    ```JavaScript
+      <View style={s.contentContainer}>
+        <ItemMenu text='负责品类组' data={response.saleCategoryGroupNum ? `${response.saleCategoryGroupNum}` + ' 个品类组' : '-'} icon={Icon.IconCategory} clickEvent={this._goToCategoryDetails} />
+        <ItemMenu text='负责服务站' data={response.pickHouseNum ? `${response.pickHouseNum}` + ' 个服务站' : '-'} icon={Icon.IconStoreHouse} style={{marginBottom: 10}} clickEvent={this._goToStoreHouseDetails} />
+        <ItemMenu text='清除缓存' data={cacheSize} icon={Icon.IconBroom} style={{marginBottom: 10}} />
+        <ItemMenu text='CodeVersion' data={LawrenceUpdater.getLawrenceUpdater().JSCODE_VERSION ? LawrenceUpdater.getLawrenceUpdater().JSCODE_VERSION : '-'} icon={Icon.IconCodeVersion} clickEvent={this._checkUpdate} />
+        <ItemMenu text='关于宋小福' data={DeviceInfo.deviceInfo.version} icon={Icon.IconAbout} />
+        <ItemMenu text='应用下载' data='' icon={Icon.IconDownload} style={{marginBottom: 10}} clickEvent={this._goToDownloadApp} />
+        <TouchableOpacity
+          style={s.logoutContainer}
+          onPress={this._logout}
+          // onLongPress={this._checkUpdate}
+          // activeOpacity={0.3}
+        >
+          <Image source={Icon.IconLogout} style={{width: 18, height: 18, marginRight: 10}} />
+          <Text style={s.goOut}>退出当前账户</Text>
+        </TouchableOpacity>
+        <Text color='$N12' style={s.bottomTip}>产品的意见与反馈请钉钉联系：豆爸 13510567758</Text>
+      </View>
+
+        /**
+         * @description   跳转到个人信息详情页
+         * @author        吴涛
+         * @date          2017/12/01
+         */
+        _goToPersonalDetails = () => {
+          // const { userReducer } = this.props
+          const { response } = this.state
+          this.navigator().push('PersonalDetails', {
+            // userName: userReducer.userName,
+            // mobilePhone: userReducer.mobilePhone,
+            saleUsers: response.saleUsers
+          })
+        }
+
+        /**
+         * @description   跳转到负责服务站详情页
+         * @author        吴涛
+         * @date          2017/12/01
+         */
+        _goToStoreHouseDetails = () => {
+          // const { userReducer } = this.props
+          const { response } = this.state
+          if (response.pickHouseNum <= 0) {
+            global.Toast.show('暂无负责的服务站 !')
+            return
+          }
+          this.navigator().push('StoreHouseDetails', {
+            pickHouseList: response.pickHouseList
+          })
+        }
+
+        /**
+         * @description   跳转到负责品类组详情页
+         * @author        吴涛
+         * @date          2017/12/01
+         */
+        _goToCategoryDetails = () => {
+          // const { userReducer } = this.props
+
+          const { response } = this.state
+          if (response.saleCategoryGroupNum <= 0) {
+            global.Toast.show('暂无负责的品类组 !')
+            return
+          }
+          this.navigator().push('CategoryDetails', {
+            saleCategoryGroupList: response.saleCategoryGroupList
+          })
+        }
+
+        /**
+         * @description   跳转到App下载页
+         * @author        吴涛
+         * @date          2017/12/06
+         */
+        _goToDownloadApp = () => {
+          this.navigator().push('ToDownload', {
+            url: 'https://www.songxiaocai.com/wap/wapapplist.html'
+          })
+        }
+
+    ```
+
+    个人信息页
+
+    ```JavaScript
+
+      <Page
+        title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>个人信息</Text>}
+        barStyle='dark-content'
+        leftContent={this._goBack()}
+        themeColor='#fff'
+      >
+        <ItemInfo icon={Icon.IconPeopleBlue} menuInfo='姓名' info={saleUsers.userName} style={{marginTop: 10}} />
+        <ItemInfo icon={Icon.IconCall} menuInfo='手机号' info={phone} clickEvent={() => {
+          // 点击手机拨打电话功能未完成, 待修复
+          // Linking.openURL('tel' + Number(mobilePhone))
+            // .catch(() => {
+            //   Alert.alert('拨打失败, 请重试!')
+            // })
+        }} />
+        <ItemMenu text='角色信息' data={`${saleUsers.roles.length}` + ' 个角色'} icon={Icon.IconBusinessCard} style={{marginTop: 10}} clickEvent={this._goToRoleInfo} />
+        <ItemInfo icon={Icon.IconFlag} menuInfo='我的上级' info={saleUsers.myLeader ? saleUsers.myLeader : '-'} />
+        <ItemMenu icon={Icon.IconFlag} text='我的下属' data={_.isEmpty(saleUsers.subGroups) ? '暂无下属' : `${saleUsers.subGroups.length}` + ' 位下属'} clickEvent={this._goToSubordinateInfo} />
+      </Page>
+    
+    ```
+
+      角色信息
+
+      ```JavaScript
+
+      <Page
+        title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>角色信息</Text>}
+        barStyle='dark-content'
+        leftContent={this._goBack()}
+        themeColor='#fff'
+      >
+        <FlatList
+          data={roles}
+          renderItem={this._renderItem}
+          ListEmptyComponent={this._renderEmpty}
+          keyExtractor={(e, i) => i}
+          style={{marginTop: 10}}
+        />
+      </Page>
+
+      /**
+        * @desc        渲染角色信息列表
+        * @author      吴涛
+        * @date        2017/12/11
+        */
+      _renderItem = ({item}) => {
+        return (
+          <View style={s.container}>
+            <Text style={s.text}>{item.roleName}</Text>
+          </View>
+        )
+      }
+
+      /**
+        * @desc        渲染空角色信息列表
+        * @author      吴涛
+        * @date        2017/12/11
+        */
+      _renderEmpty = () => {
+        return (
+          <View style={s.empty}>
+            <Text fontSize='$T15' color='$N11'>暂无角色信息</Text>
+          </View>
+        )
+      }
+      
+      ```
+
+      应用下载
+
+      ```JavaScript
+
+        <Page
+          title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>应用下载</Text>}
+          barStyle='dark-content'
+          leftContent={this._goBack()}
+          themeColor='#fff'
+        >
+          <View style={s.container}>
+            <WebView
+              ref={WEBVIEW_REF}
+              source={{uri: url}}
+              mixedContentMode='always'
+              renderError={this._renderError}
+              onNavigationStateChange={(e) => {
+                // console.log('e::', e)
+                if (e.url === url) {
+                  return
+                }
+                Linking.openURL(e.url)
+                  .then(
+                    (res) => console.log('调用成功, res:', res))
+                  .catch(
+                    (err) => console.log('调用失败, error:', err)
+                  )
+              }}
+              // injectJavaScript={() => Alert.alert('injectJavaScript')}
+              // injectedJavaScript="console.log('无名氏')"
+              javaScriptEnabled={this.state.jsEnabled}
+              scalesPageToFit={this.state.isScale}
+              domStorageEnabled={this.state.isDomStorage}
+              // onShouldStartLoadWithRequest={() => false}
+              onError={this._onError}
+            />
+          </View>
+        </Page>
+
+      ```
+
+
+
   #### 数据库设计
   #### 本章小结
 
