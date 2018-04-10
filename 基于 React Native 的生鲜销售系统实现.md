@@ -1,12 +1,12 @@
-# 基于 React Native 的销售直发系统实现
+# 基于 React Native 的销售直发系统实现`第五章`
 
-## 开发背景
+## 开发背景`5.1`
 
   2016年中央一号文件鼓励涉及农业的企业应用大数据、云计算、物联网、移动网络等新技术推动农业全产业链改造升级, 以 '互联网+农业' 新模式促进农产品电子商务快速发展, 为农民增收、农业增效形成新的突破点 `[1]` , 近年来, 随着马云提出的新零售思想, 各大互联网开始向农业生鲜这一块靠拢, 河马鲜生、京东到家、蚂蚁鲜生、美菜、果小美、鲜生有请、喵鲜生等生鲜平台都想在生鲜行业这个大蛋糕中分得一杯羹, 在如今的互联网+时代, 有这样的想法是很正常的, 就农业生鲜行业来说, 这永远都不会是过时的行业, 无论社会、科技如何发展, 但人的衣食住行都是必需品, 单从这一点来说, 做生鲜行业就没错, 加之以往的农业生鲜的运营模式有很大的问题, 举个简单的例子, 一颗普通的蒜子, 从基地收到的价格在 0.5元/斤 - 1元/斤 左右, 但是到了二批市场, 也就是我们消费者购买的市场中就变成了 5元/斤 - 10元/斤 左右, 价格整整提升了十倍, 这不是玩笑话, 而是真正存在在现在的模式当中, 如果能够打通从基地到二批市场的供应链, 那么, 这其中的成本就会低很多, 利润也就很多了, 因此, 此 App 的目的就是为了节约生鲜的运输成本, 直接创建直发计划, 本文设计并实现了一个基于 React Native 的销售直发系统, 对每一个模块需要具备的功能进行简单说明, 系统的功能包括 用户登陆、个人主页、创建直发计划、选择到货时间、选择供应商、选择SKU、选择服务站、确认直发计划等功能.
 
-## 需求分析
+## 需求分析`5.2`
 
-  ### 总体业务描述
+  ### 总体业务描述`5.2.1`
 
     本论文所设计实现的基于 React Native, React Native 的优势在于它结合了 Web 端的应用和 Native(原生)应用, 跨平台的特性使得我们能够同时开发 IOS 和 Android 两种版本的 App, 而开发者只需要学习一种语言就可以开发多种系统的应用, 效率极高, 而且这也极大的减少了项目开发的周期, 减少了项目开发的成本.`[2]`
 
@@ -22,7 +22,7 @@
 2. 个人主页: 登陆以后点击我的Tab, 可以进入个人页, 可以看到个人的基本信息, 负责的品类组数量, 负责的服务站数量, 应用下载, 退出登陆几个列表.
 3. 直发: 进入之后有一个创建直发计划按钮, 点击之后进入选择到货时间页-> 选择供应商-> 选择SKU-> 选择服务站-> 完善销售计划.
 
-  ### UI 设计
+  ### UI 设计`5.2.2`
 
     https://www.songxiaocai.com/wap/wapapplist.html
 
@@ -44,20 +44,18 @@
   ![](./important/direct/direct-6.png)
   ![](./important/direct/direct-7.png)
   
-### 流程图
+### 流程图`5.2.3`
 
 ![](./important/mine/mine_import.png)
 ![](./important/direct/direct_import.png)
 
-### ER图 `[3]`
+### ER图 `[3]` `5.2.4`
 
   ![](./important/ER.png)
 
-## 总体设计
-
-  ### 数据库设计
-
-  #### 角色负责品类列表的实现
+## 总体设计`5.3`
+  ### 数据库设计`5.3.1`
+  #### 角色负责品类列表的实现`5.3.1.1`
   ```JavaScript
     // 返回角色负责的品类列表
     // 参数名字: directPlanDate
@@ -80,7 +78,7 @@
     }
 
   ```
-  #### 供应商能够提供的sku列表的实现
+  #### 供应商能够提供的sku列表的实现`5.3.1.2`
 
   ```JavaScript
   
@@ -111,7 +109,7 @@
     }
 
   ```
-  #### 服务站列表的实现
+  #### 服务站列表的实现`5.3.1.3`
 
   ```JavaScript
   
@@ -131,8 +129,7 @@
     }
   
   ```
-
-  #### 选择到货时间的实现
+  #### 选择到货时间的实现`5.3.1.4`
 
   ```JavaScript
   
@@ -146,7 +143,7 @@
     }
 
   ```
-  #### 直发计划id和服务站id获取当前直发计划下该服务站的销售计划信息的实现
+  #### 直发计划id和服务站id获取当前直发计划下该服务站的销售计划信息的实现`5.3.1.5`
 
   ```JavaScript
 
@@ -197,7 +194,7 @@
     }
 
   ```
-  #### 个人信息
+  #### 个人信息`5.3.1.6`
 
   ```JavaScript
 
@@ -222,9 +219,8 @@
     }
 
   ```
-  ### 功能性代码
-
-    路由
+  ### 功能性代码`5.3.2`
+  #### 路由`5.3.2.1`
 
     ```JavaScript
     
@@ -255,7 +251,7 @@
     
     ```
 
-    选择到货时间的实现
+  #### 选择到货时间的实现`5.3.2.2`
 
     ```JavaScript
       <Page
@@ -292,7 +288,7 @@
         })
       }
     ```
-    选择供应商的实现
+  #### 选择供应商的实现`5.3.2.3`
 
     ```JavaScript
       <Page
@@ -352,8 +348,7 @@
       }
     
     ```
-
-    选择SKU的实现
+  #### 选择SKU的实现`5.3.2.4`
 
     ```JavaScript
     
@@ -430,8 +425,7 @@
       }
     
     ```
-
-    选择服务站的实现
+  #### 选择服务站的实现`5.3.2.5`
 
     ```JavaScript
       <Page
@@ -540,9 +534,7 @@
         {this._renderModal()}
       </Page>
     ```
-
-
-    个人主页的实现
+  #### 个人主页的实现`5.3.2.6`
 
     ```JavaScript
       <View style={s.contentContainer}>
@@ -625,9 +617,8 @@
           })
         }
 
-    ```
-
-    个人信息页的实现
+    ```  
+  #### 个人信息页的实现`5.3.2.7`
 
     ```JavaScript
 
@@ -650,9 +641,8 @@
         <ItemMenu icon={Icon.IconFlag} text='我的下属' data={_.isEmpty(saleUsers.subGroups) ? '暂无下属' : `${saleUsers.subGroups.length}` + ' 位下属'} clickEvent={this._goToSubordinateInfo} />
       </Page>
     
-    ```
-
-      角色信息的实现
+    ``` 
+  #### 角色信息的实现`5.3.2.8`
 
       ```JavaScript
 
@@ -698,49 +688,49 @@
       }
       
       ```
+  #### 应用下载的实现`5.3.2.9`
 
-      应用下载的实现
+  ```JavaScript
 
-      ```JavaScript
+    <Page
+      title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>应用下载</Text>}
+      barStyle='dark-content'
+      leftContent={this._goBack()}
+      themeColor='#fff'
+    >
+      <View style={s.container}>
+        <WebView
+          ref={WEBVIEW_REF}
+          source={{uri: url}}
+          mixedContentMode='always'
+          renderError={this._renderError}
+          onNavigationStateChange={(e) => {
+            // console.log('e::', e)
+            if (e.url === url) {
+              return
+            }
+            Linking.openURL(e.url)
+              .then(
+                (res) => console.log('调用成功, res:', res))
+              .catch(
+                (err) => console.log('调用失败, error:', err)
+              )
+          }}
+          // injectJavaScript={() => Alert.alert('injectJavaScript')}
+          // injectedJavaScript="console.log('无名氏')"
+          javaScriptEnabled={this.state.jsEnabled}
+          scalesPageToFit={this.state.isScale}
+          domStorageEnabled={this.state.isDomStorage}
+          // onShouldStartLoadWithRequest={() => false}
+          onError={this._onError}
+        />
+      </View>
+    </Page>
 
-        <Page
-          title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>应用下载</Text>}
-          barStyle='dark-content'
-          leftContent={this._goBack()}
-          themeColor='#fff'
-        >
-          <View style={s.container}>
-            <WebView
-              ref={WEBVIEW_REF}
-              source={{uri: url}}
-              mixedContentMode='always'
-              renderError={this._renderError}
-              onNavigationStateChange={(e) => {
-                // console.log('e::', e)
-                if (e.url === url) {
-                  return
-                }
-                Linking.openURL(e.url)
-                  .then(
-                    (res) => console.log('调用成功, res:', res))
-                  .catch(
-                    (err) => console.log('调用失败, error:', err)
-                  )
-              }}
-              // injectJavaScript={() => Alert.alert('injectJavaScript')}
-              // injectedJavaScript="console.log('无名氏')"
-              javaScriptEnabled={this.state.jsEnabled}
-              scalesPageToFit={this.state.isScale}
-              domStorageEnabled={this.state.isDomStorage}
-              // onShouldStartLoadWithRequest={() => false}
-              onError={this._onError}
-            />
-          </View>
-        </Page>
+  ```
+#### 本章小结
 
-      ```
-  #### 本章小结
-
+xxx
 
 [1]周功建."互联网+"环境下中国农产品电子商务现状及趋势.2016.
 [2]程化梅. 基于React Native的即时通讯应用的设计与实现[D].武汉邮电科学研究院,2017.
