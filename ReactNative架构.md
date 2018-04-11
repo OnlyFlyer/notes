@@ -5,7 +5,7 @@
 在 Flux, Redux 等应用程序架构出现之前, 我们了解的更多的应该是前端 MV* 架构, 不得不说, 是 React 和 React Native 带火了 Flux, Redux. 那么 Flux, Redux 到底是什么呢? 本章将与您一起探讨.
 
   1. Flux的解决方案`3.1.1`
-      1. Flux 同样是 FB 工程师提出的, Flux 主要是针对前端 MVC 框架的局限总结出来的基于 dispatcher 的前端应用架构模式.
+      1. Flux 同样是 FackBook 工程师提出的, Flux 主要是针对前端 MVC 框架的局限总结出来的基于 dispatcher 的前端应用架构模式.
 
       2. 我们知道, React 也推崇单向数据流的, 而在 Flux 中, 单向数据流则是在整体架构之上, 数据从 action, dispatcher, 再到 store, 最后回到view这一过程是单向且不可逆的, 因此不会像 MVC 那样互相交错联系.
       3. Flux 作为一种全新的前端架构方式给我们带来了思想上的冲击与转变, Flux 强调单向数据流, 强调谨慎可追溯的数据变动, 这些约束和设计都使愈来愈复杂的前端应用不会失去清晰的逻辑和架构.
@@ -19,7 +19,7 @@
 ![](./important/react-fluxx.jpg)
 
 
-      1. Flux 是 FackBook 用来创建客户端 web 应用的一种架构模式, 使用单向数据流方式实现了 React 组件的复合和通信. 一个 Flux 应用由三大部分组成: dispatcher, store, view, dispatcher 负责分发时间, store 负责保存数据, view 负责
+      1. Flux 是 FackBook 用来创建客户端 web 应用的一种架构模式, 使用单向数据流方式实现了 React 组件的复合和通信. 一个 Flux 应用由三大部分组成: dispatcher, store, view. dispatcher 负责分发时间, store 负责保存数据, view 负责
       2. 说到架构模式, MVVM, MVC这些就浮现出来了, Flux 架构和 MVC 架构比较相似, 但是在 Flux 中没有一个明确的 Controller, 而是由一个 controller-view, 将 view 和 store 绑定在一起, 因此没有 MVC 中 controller 特别复杂的逻辑
       3. ...
   3. Flux 核心思想`3.1.3`
