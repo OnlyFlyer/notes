@@ -43,7 +43,6 @@
   ![](./important/direct/direct-5.png)
   ![](./important/direct/direct-6.png)
   ![](./important/direct/direct-7.png)
-  
 ### 流程图`5.2.3`
 
 ![](./important/mine/mine_import.png)
@@ -218,7 +217,7 @@
     }
 
   ```
-  ### 功能性代码`5.3.2`
+  ### 具体实现`5.3.2`
   #### 路由`5.3.2.1`
 
     ```JavaScript
