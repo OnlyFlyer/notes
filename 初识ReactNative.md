@@ -4,19 +4,16 @@
 
 ## ReactNative简介`2.1`
 
-      说到 React Native, 我必须先说一下它独一无二的口号: Learn Once, Write anywhere. 但 React Native 并不是说有就有的, 它源于 FaceBook 的一个内部项目 React , 也就是现在前端三大框架 Vue, React, Angular 之一, 因为 FaceBook 对市面上 JavaScript MVC 框架都不满意, 决定重新写一门框架. 为了 React 能够发展的更好, 更强大, 因此在 2013年5月的时候将它开源了, 开源的一大好处就是能够让世界上的程序员都能够去完善 React , 果不其然, React 框架逐渐建设起了强大的生态, Github 上的 Star 数 也稳步上升, 截至到2018年初, Star 数甚至达到了 80.4k之多。 当然, React 用的更多的是在 Web 开发中, FaceBook 的工程师们又将其延伸到了其它平台, 于是就有了 React Native, 这个极大提高了移动端开发效率的 React Native.
-
+      说到 React Native, 我必须先说一下它独一无二的口号: Learn Once, Write anywhere. 但 React Native 并不是说有就有的, 它源于 FaceBook 的一个内部项目 React , 也就是现在前端三大框架 Vue, React, Angular 之一, 因为 FaceBook 对市面上 JavaScript MVC 框架都不满意, 决定重新写一门框架. 为了 React 能够发展的更好, 更强大, 因此在 2013年5月的时候将它开源了, 开源的一大好处就是能够让世界上的程序员都能够去完善 React , 果不其然, React 框架逐渐建设起了强大的生态, Github 上的 Star 数 也稳步上升, 截至到2017年底, Star 数甚至达到了 80.4k之多。 当然, React 用的更多的是在 Web 开发中, FaceBook 的工程师们又将其延伸到了其它平台, 于是就有了 React Native, 这个极大提高了移动端开发效率的 React Native.
 
   1. 前端的发展历程`2.1.1`
-      - 前端已经高速发展了十年了, 而且现在还在不断的在前行, 我们看到了浏览器厂商的竞争, 如: 搜狗/UC/百度..., 也经历了各种类库的竞争, 也经历了 JavaScript 的更新换代, 现在的 JavaScript 已经不在是止步于脚本的简单交互的语言了.
-      - 现在整个互联网应用从轻量化的 Web 网页到 富客户端 App 的变化, 前端应用的规模越来越大, 交互也愈来愈复杂了, 近几年, 前端工程用简单的方法库jQuery 已经不能维系应用的复杂度, 需要使用框架的思想去构建应用, 我们看到 MVC、MVVM 这些前端分层模型都出现在前端开发的过程中. 这都是前端迎接挑战和发展时沉淀下来的.
+      - 前端已经高速发展了十年了, 而且现在还在不断的在前行, 我们看到了浏览器厂商的竞争, 如: 搜狗、UC、百度..., 也经历了各种类库的竞争, 也经历了 JavaScript 的更新换代, 现在的 JavaScript 已经不在是止步于脚本的简单交互的语言了.
+      - 现在整个互联网应用从轻量化的 Web 网页到 富客户端 App 的变化, 前端应用的规模越来越大, 交互也愈来愈复杂了, 近几年, 前端工程用简单的方法库jQuery, Bootstrap等 已经不能维系应用的复杂度, 需要使用框架的思想去构建应用, 我们看到 MVC、MVVM 这些前端分层模型都出现在前端开发的过程中. 这都是前端迎接挑战和发展时沉淀下来的.
   2. 引入 React Native`2.1.2`
-
 
       现在的 React Native 正在茁壮成长阶段, 因此每一个版本都有很多的新功能新特点, 还有弃用的 API, 为了更好的去研究 React Native, 因此研究版本定于 0.50-stable, 建议系统 >= Android 4.1 (API 16), >= IOS 8.0, 开发环境须为 Mac OS, 图2.1-1是获取 React Native 0.50-stable源码方式:
 
   ![](./important/react-version.jpg)
-
 
   3. 浅析 React Native`2.1.3`
 
@@ -25,16 +22,14 @@
 
   4. 小结`2.1.4`
 
-      - 借用<< 深入React技术栈 >>`(这是引用)`中的一句话: React 必然不过是一块小石头沉入水底, 但它溅起的涟漪却影响了无数的前端开发的思维, 影响了无数应用的构建. 对于它来说, 这些就是它的成就. 成就 JavaScript 的繁荣, 成就前端标准更快的推进.
+      - 借用《深入React技术栈》`(这是引用)`中的一句话: React 必然不过是一块小石头沉入水底, 但它溅起的涟漪却影响了无数的前端开发的思维, 影响了无数应用的构建. 对于它来说, 这些就是它的成就. 成就 JavaScript 的繁荣, 成就前端标准更快的推进.
 ## JSX语法`2.2`
 
-  JSX 应该是 React 的第一个新的概念, 其实对于这种静态编译早在前些年就已经出现了, 虽然写法与 JavaScript 不大一样, 但是经过编译之后得到的js 文件却异曲同工, 之前的 CoffeeScript 就是例子, 只是因为 ES6 标准化的推进, 慢慢淡出了我们的视野.
-
+  JSX 应该是 React 的第一个新的概念, 其实对于这种静态编译早在前些年就已经出现了, 虽然写法与 JavaScript 不大一样, 但是经过编译之后得到的 JavaScript 文件却异曲同工, 之前的 CoffeeScript 就是例子, 只是因为 ES6 标准化的推进, 慢慢淡出了我们的视野.
 
 1. JSX的由来`2.2.1`
 
-  JSX 与 React 有什么关系呢? React 引入 JSX 语法是为了方便视图层的组件化, 从而包揽了 HTML 结构化的功能. 也就是 类似于 ejs, jade(现已更名为 puge)等模板语言. 但又不尽相同, 因为 React 是通过创建和更新虚拟元素来管理整个虚拟DOM(Virtual DOM).
-
+  JSX 与 React 有什么关系呢? React 引入 JSX 语法是为了方便视图层的组件化, 从而包揽了 HTML 结构化的功能. 也就是 类似于 ejs, jade(现已更名为 puge)等模板语言, 是为了方便服务端渲染. 但又不尽相同, 因为 React 是通过创建和更新虚拟元素来管理整个虚拟DOM(Virtual DOM).
 
 2. JSX的基本语法`2.2.2`
 
@@ -86,8 +81,7 @@
 
 3. JavaScript属性表达式`2.2.3`
 
-React Native 为了方便服务端渲染, 支持属性值使用 JavaScript 表达式, 只需要用 {} 替换 “” 就可以了.
-
+React Native 为了方便服务端渲染, 支持属性值使用 JavaScript 表达式, 只需要用双括符即 '{}' 替换 “” 即可.
 
 ```JavaScript
 // 输入(JSX)
@@ -191,81 +185,7 @@ Const person = React.createElement(
 
 生命周期的概念广泛运用于各行各业, 一般说来, 生命周期是指一个不可逆的单方向的过程, 而软件开发的生命周期则稍有不同, React 组件的生命周期是根据 React 在挂载前, 挂载后, 渲染, 卸载..这些不同的阶段执行的钩子函数, 当渲染后的组件需要更新时, React 会再一次渲染页面. 基于这种特殊的执行方式, 可以将 React 生命周期分成两个大的阶段: 组件挂载或卸载时, 组件更新时.
 
-
-```JavaScript
-import React from 'React'
-
-class ComponentB extends React.Component {
-  defaultProps = {
-    str: 'Hello',
-    num: 1
-  }
-  constructor(props) {
-    super(props)
-    this.state = {
-      str: 'hello'
-      }
-  }
-
-  componentWillMount() {
-    console.log('this is componentWillMount')
-  }
-
-  componentDidMount() {
-    console.log('this is componentDidMount')
-  }
-
-  componentWillReceiveProps(nextProps) {
-    console.log('this is componentWillReceiveProps')
-  }
-
-  shouldComponentUpdate() {
-    console.log('this is shouldComponentUpdate')
-    return true // 此处返回 true 则页面刷新, 返回 false 则不刷新
-  }
-
-  componentWillUpdate() {
-    console.log('this is componentWillUpdate')
-  }
-
-  componentDidUpdate() {
-    console.log('this is componentDidUpdate')
-  }
-
-  componentWillUnmount() {
-    console.log('this is componentWillUnmount')
-  }
-  render() {
-    const { num } = this.props
-    const { str } = this.state
-    console.log('this is render')
-      return(
-        <div>
-          <span>{`props:${parseInt(num)},state:${str}`}</span>
-        </div>
-      )
-  }
-}
-
-ReactDom.render(
-  <ComponentB></ComponentB>,
-  document.getElementById('container')
-)
-
-```
-
-1. 常见的生命周期函数`2.4.1`
-
-
-  componentWillMount
-  componentWillReceiveProps
-  showldComponentUpdate
-  componentWillUpdate
-  componentWillUnmount
-  render
-  componentDidUpdate
-
-2. 挂载过程`2.4.2`
+1. 挂载过程`2.4.2`
 
 
   组件挂载是最基本的过程, 主要包括一些变量的声明, 数据的获取等等一系列组件状态的初始化, 如下面的 `例2.3.4`:
@@ -305,20 +225,18 @@ ReactDom.render(
 在 `例23.5.5.` 中, 有 componentWillMount 和 componentDidMount 两个生命周期函数, 从字面上就很好理解, 前者是在 挂载前调用, 后者是在 挂载后调用, 分别代表了渲染前后的时刻. 这两个生命周期函数只会在组件初始化的时候运行一次, 若在 componentWillMount 里面执行 `this.setState({})` 方法, 组件同样会更新 state, 但是组件只会渲染一次, 因此在组件挂载前这个生命周期函数里执行 `this.setState({})` 是无意义的, 可以将其放在 `this.state` 里面. 若在componentDidMount 里面调用 `this.setState({})` 方法则组件会重新渲染一次, 也就是重新走一遍生命周期, 这让组件在初始化过程就渲染了两次组件
 
 
-3. 卸载过程`2.4.3`
+2. 卸载过程`2.4.3`
 
 组件在卸载的时候比较简单, 只有 componentWillUnmount 这一个函数, 在这个函数中, 常会执行如事件回收等的操作
 
 
-4. 组件更新`2.4.4`
-
+3. 组件更新`2.4.4`
 
 当父组件的状态发生变化, 从而向子组件传递 props, 或者子组件自身调用了 `this.setState({})` 方法的时候, 组件自身的 state 就会发生变化, 就会引起组件更新. 更新会执行 shuldComponentUpdate, componentWillUpdate, render, componentDidUpdate 这几个函数, 其中, shouldComponentUpdate 接受更新的props 和state , 返回的是一个 Boolean 的值, 主要是为了判断所引发的改变是否值得更新整个组件, 当返回 true则需要更新组件, 返回 false 则不需要更新组件
 
-5. 小结`2.4.5`
+4. 小结`2.4.5`
+
+本节主要讲了 React 常见的几个生命周期函数以及函数的功能, 生命周期函数是为了将 React 分层, 分结构, 使数据变化, 模版渲染变得有序, 有依可循, 可追溯.
 ## 本章小结
 
 本章主要 React Native 做了一些简单的认识, 并简单介绍了开发需要使用的 JSX语法、React数据流、React生命周期, 我们知道在 React 组件内部是通过 state 来传输数据流的, 在外部是通过 props 传输数据的, 这样做的原因是为了数据的正常流向, 而生命周期则是在 React 组件从挂载到更新再到卸载的过程中不同的阶段调用的钩子函数, 下一章会介绍一下 React Native 在项目中的两种架构方案.
-1. ...
-2. ...
-3. ...
