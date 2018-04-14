@@ -21,33 +21,9 @@ Android 与IOS 类似, 不过它并不像IOS 那样, 有 JavaScriptCore 框架�
 
 ![](./important/react_modal_1.png)
 ![](./important/react_modal_2.png)
-
-## React Native 启动流程(IOS)`4.3`
-
-![](./important/react-启动流程.png)
-
-1.创建RCTRootView -> 设置窗口根控制器的View,把RN的View添加到窗口上显示。
-
-2.创建RCTBridge -> 桥接对象,管理JS和OC交互, 做中转左右。
-
-3.创建RCTBatchedBridge -> 批量桥架对象，JS和OC交互具体实现都在这个类中。
-
-4.执行[RCTBatchedBridge loadSource] -> 加载JS源码
-
-5.执行[RCTBatchedBridge initModulesWithDispatchGroup] -> 创建OC模块表
-
-6.执行[RCTJSCExecutor injectJSONText] -> 往JS中插入OC模块表
-
-7.执行完JS代码，回调OC，调用OC中的组件
-
-8.完成UI渲染
-
-## React Native 加载源码流程(IOS)`4.4`
-
-
 ## 组件分析`4.3`
 
-  以最普通的 Button 组件来分析, 在 RN 0.50版本的/Libraries/Components/Button.js 下包含所有的 Button 组件的介绍.
+  以最普通的 Button 组件来分析, 在 RN 0.50版本的/Libraries/Components/Button.js 下包含 Button 组件所有的介绍.
 
   ```JavaScript
   const ColorPropType = require('ColorPropType');
@@ -61,29 +37,140 @@ Android 与IOS 类似, 不过它并不像IOS 那样, 有 JavaScriptCore 框架�
   const View = require('View');
 
   const invariant = require('fbjs/lib/invariant');
+
+  class Button extends React.Component<{
+    title: string,
+    onPress: () => any,
+    color?: ?string,
+    accessibilityLabel?: ?string,
+    disabled?: ?boolean,
+    testID?: ?string,
+  }> {
+    static propTypes = {
+      /**
+      * Text to display inside the button
+      */
+      title: PropTypes.string.isRequired,
+      /**
+      * Text to display for blindness accessibility features
+      */
+      accessibilityLabel: PropTypes.string,
+      /**
+      * Color of the text (iOS), or background color of the button (Android)
+      */
+      color: ColorPropType,
+      /**
+      * If true, disable all interactions for this component.
+      */
+      disabled: PropTypes.bool,
+      /**
+      * Handler to be called when the user taps the button
+      */
+      onPress: PropTypes.func.isRequired,
+      /**
+      * Used to locate this view in end-to-end tests.
+      */
+      testID: PropTypes.string,
+    };
+
+    render() {
+      const {
+        accessibilityLabel,
+        color,
+        onPress,
+        title,
+        disabled,
+        testID,
+      } = this.props;
+      const buttonStyles = [styles.button];
+      const textStyles = [styles.text];
+      if (color) {
+        if (Platform.OS === 'ios') {
+          textStyles.push({color: color});
+        } else {
+          buttonStyles.push({backgroundColor: color});
+        }
+      }
+      const accessibilityTraits = ['button'];
+      if (disabled) {
+        buttonStyles.push(styles.buttonDisabled);
+        textStyles.push(styles.textDisabled);
+        accessibilityTraits.push('disabled');
+      }
+      invariant(
+        typeof title === 'string',
+        'The title prop of a Button must be a string',
+      );
+      const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
+      const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+      return (
+        <Touchable
+          accessibilityComponentType="button"
+          accessibilityLabel={accessibilityLabel}
+          accessibilityTraits={accessibilityTraits}
+          testID={testID}
+          disabled={disabled}
+          onPress={onPress}>
+          <View style={buttonStyles}>
+            <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          </View>
+        </Touchable>
+      );
+    }
+  }
+
+  const styles = StyleSheet.create({
+    button: Platform.select({
+      ios: {},
+      android: {
+        elevation: 4,
+        // Material design blue from https://material.google.com/style/color.html#color-color-palette
+        backgroundColor: '#2196F3',
+        borderRadius: 2,
+      },
+    }),
+    text: Platform.select({
+      ios: {
+        // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+        color: '#007AFF',
+        textAlign: 'center',
+        padding: 8,
+        fontSize: 18,
+      },
+      android: {
+        color: 'white',
+        textAlign: 'center',
+        padding: 8,
+        fontWeight: '500',
+      },
+    }),
+    buttonDisabled: Platform.select({
+      ios: {},
+      android: {
+        elevation: 0,
+        backgroundColor: '#dfdfdf',
+      }
+    }),
+    textDisabled: Platform.select({
+      ios: {
+        color: '#cdcdcd',
+      },
+      android: {
+        color: '#a1a1a1',
+      }
+    }),
+  });
+
+  module.exports = Button;
   ```
 
-  这是
+  前面 Button 组件中引入的包, 其中, Platfrom 是判断当前使用设备的系统, PropTypes 是规定传递的 props 的类型, 其他几个都是 RN 中的组件, 之后 Button 组件首先用静态的 propTypes 规定了 props 的类型, 如 title 为必传参数且为 string 类型, 而 color 则不是必传参数. 若未传必传参数, 则会抛出 warn 警告.
 
-拿一个组件去解释, 贴几张图
-## Android
-  1. ...
-  2. ...
-  3. ...
-  4. ...
-  5. ...
-  6. 小结
-## IOS
-  1. ...
-  2. ...
-  3. ...
-  4. ...
-  5. ...
-  6. 小结
+  而 render 函数是为了渲染页面, 也就是我们所看到的按钮是在 render 中形成的. 在 render 中, 通过 Platform.OS 来区分 IOS 和 Android 系统, 而且不同的系统所使用的默认样式都不一样. 因此可以确定 RN 中对 IOS 和 Android 系统下样式进行了封装, 通过封装, 让我们可以使用一样的组件在 IOS 和 Android 系统下看到的 UI 也是一样的.
+
 ## 本章小结
-  1. ...
-  2. ...
-  3. ...
+
+  本章简单介绍了 RN 的原理, JavaScript 于原生语言的交互, IOS 系统下, Object-C 提供一个 JavaScript Core 模块与 JS 交互, 而在 Android 下, 是通过 C++ 这个中间层, C++ 的JSCExecutor 模块能够家在和执行 JS 代码, JsToNativeBridge 模块与 JAVA 层交互, 达到双向交互的效果. 最后通过 Button 组件来剖析 RN, 我们虽然使用 RN 很简单, 也减少了开发 App的周期, 但这背后是无数工程师日日夜夜的奋战, 可敬.
 
 
-就像人饿了就要吃饭, 醒了就应该敲代码.
+

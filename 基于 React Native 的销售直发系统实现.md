@@ -36,19 +36,22 @@
 
 直发: 
 
-  ![](./important/direct/direct-1.png)
-  ![](./important/direct/direct-2.png)
-  ![](./important/direct/direct-3.png)
-  ![](./important/direct/direct-4.png)
-  ![](./important/direct/direct-5.png)
-  ![](./important/direct/direct-6.png)
-  ![](./important/direct/direct-7.png)
-### 流程图`5.2.3`
+  ![](./important/direct_ui/direct-1.png)
+  ![](./important/direct_ui/direct-2.png)
+  ![](./important/direct_ui/direct-3.png)
+  ![](./important/direct_ui/direct-4.png)
+  ![](./important/direct_ui/direct-5.png)
+  ![](./important/direct_ui/direct-6.png)
+  ![](./important/direct_ui/direct-7.png)
+  ### 流程图`5.2.3`
 
+  根据设计, 大致流程图 `如图zc.gg`
 ![](./important/mine/mine_import.png)
-![](./important/direct/direct_import.png)
+![](./important/direct_ui/direct_import.png)
 
-### ER图 `[3]` `5.2.4`
+  ### ER图 `[3]` `5.2.4`
+
+  由流程图和整体分析, ER图`如图as哥收到`
 
   ![](./important/ER.png)
 ## 总体设计`5.3`
@@ -728,7 +731,18 @@
   ```
 ## 本章小结
 
-xxx
+本章使用 React Native 开发了销售直发系统 App, 从开发背景、 需求、UI 设计、数据库设计、实现等方面进行了仔细的阐述, 实践证明, React Native 确实能够提高开发效率, 而且用户体验上面也不错, 下面的为运行截图.
+
+![](./important/direct_android/direct_.png)
+![](./important/direct_android/direct_sku.png)
+![](./important/direct_android/direct_供应商.png)
+![](./important/direct_android/direct_入口.png)
+![](./important/direct_android/direct_创建成功.png)
+![](./important/direct_android/direct_到货时间.png)
+![](./important/direct_android/direct_完善计划.png)
+![](./important/direct_android/direct_服务站.png)
+
+
 
 [1]周功建."互联网+"环境下中国农产品电子商务现状及趋势.2016.
 [2]程化梅. 基于React Native的即时通讯应用的设计与实现[D].武汉邮电科学研究院,2017.
