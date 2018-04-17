@@ -58,8 +58,9 @@
   ### 数据库设计`5.3.1`
   #### 角色负责品类列表`5.3.1.1`
 
-  此功能是为了筛选供应商, 是根据该角色所负责的品类组来筛选的, 如该销售负责西红柿、土豆、胡萝卜三种蔬菜, 可以点击三种的某一种来筛选供应商, 从而减缓页面渲染的压力, 而且这样选择也更加方便, 参数为角色ID, 而返回的数据则为JSON格式, 包含了品类ID和品类名字的数组, 如图2.3.4.
+  筛选供应商, 是根据该角色所负责的品类组来筛选的, 如该销售负责西红柿、土豆、胡萝卜三种蔬菜, 可以点击三种的某一种来筛选供应商, 从而减缓页面渲染的压力, 而且这样选择也更加方便, 参数为角色ID(Number类型), 而返回的数据则为JSON格式, 包含了品类ID(Number类型)和品类名字(String类型)的数组, 如图2.3.4.
   
+
   ```JavaScript
     // 返回角色负责的品类列表
     // 参数名字: directPlanDate
@@ -83,6 +84,8 @@
 
   ```
   #### 供应商能够提供的sku列表的实现`5.3.1.2`
+
+  sku列表, 通过选择的供应商来查询, 因此参数为供应商 ID, 返回该供应商能够提供的sku列表, 包含品类ID(Number类型), spu名字(String类型), 到货所需时间(Number类型)等, 根据描述sku列表返回的数据结构如图2.3.4.
 
   ```JavaScript
   
@@ -115,6 +118,7 @@
   ```
   #### 服务站列表的实现`5.3.1.3`
 
+  服务站列表, 服务站可选择数据库中所有已存在的服务站, 但会有销售负责服务站的限制, 返回的数据为 服务站 ID(Number类型) 和 服务站名字(String类型), 如图2.3.5
   ```JavaScript
   
     // 服务站列表
@@ -134,7 +138,7 @@
   
   ```
   #### 选择到货时间的实现`5.3.1.4`
-
+  选择到货时间, 从创建直发计划会带入一个选择最小时间的时间戳和最大时间的时间戳, 若为undefined, 则以当前时间为最小时间, 最大时间为当前时间后七天, 提交后服务端返回true和false两种结果, 判断时间选择是否正确.
   ```JavaScript
   
     // 设置供应商该品类的到达时间
@@ -148,7 +152,7 @@
 
   ```
   #### 直发计划id和服务站id获取当前直发计划下该服务站的销售计划信息的实现`5.3.1.5`
-
+  销售计划信息, 是登录角色所创建的所有的直发计划, 根据角色ID查询, 并全部返回, 每个直发计划都为一个 list, 每项包含销售计划名字(String类型), sku列表(Array类型), 到达开始时间(Number类型), 到达截止时间(Number类型), 具体数据结构如图3.5.6.
   ```JavaScript
 
     // 根据直发计划id和服务站id获取当前直发计划下该服务站的销售计划信息
@@ -199,7 +203,7 @@
 
   ```
   #### 个人信息`5.3.1.6`
-
+  个人信息, 根据角色ID查询, 返回品类组数量(Number类型), 品类(Array类型), 销售信息(Object类型), 服务站数量(Number类型), 服务站(Array类型). 销售信息内包含角色数量(Number类型), 手机号(Number类型), 角色(Array类型), 下级(Array类型), 直接上级(String类型), 销售名字(String类型), 角色ID(Number类型), 具体数据结构如图3.5.6
   ```JavaScript
 
     // 销售个人用户信息
@@ -226,10 +230,13 @@
   ### 具体实现`5.3.2`
   #### 路由`5.3.2.1`
 
+  个人主页共有八个路由, 分别是Mine, PersonalDetails, StoreHouseDetails, CategoryDetails, CategoryList, RoleInfo, SubordinateInfo, ToDownload.
+  直发共有六个路由, 分别是DirectInfoList, ChoiceDeliveryDate, ChoiceProvider, ChoiceSkuList, ChoiceStorehouseList, ConfirmSkuPrice. 注册之后可全局引用, 通过 this.navigator()的方法引用, 有push, pop, jumpTo等方法.
+
     ```JavaScript
     
     /**
-     * @desc    路由梳理
+     * @desc    路由梳理(个人主页)
      * @author  吴涛
      * @date    2017/12/01
      */
@@ -255,7 +262,36 @@
     
     ```
 
+    ```JavaScript
+    
+      /**
+      * @desc    路由梳理(直发计划)
+      * @author  吴涛
+      * @date    2017/12/20
+      */
+      import {
+        DirectInfoList,
+        ChoiceDeliveryDate,
+        ChoiceProvider,
+        ChoiceSkuList,
+        ChoiceStorehouseList,
+        ConfirmSkuPrice
+      } from '../views/direct'
+
+      export {
+        DirectInfoList,
+        ChoiceDeliveryDate,
+        ChoiceProvider,
+        ChoiceSkuList,
+        ChoiceStorehouseList,
+        ConfirmSkuPrice
+      }
+    
+    ```
+
   #### 选择到货时间的实现`5.3.2.2`
+
+    选择到货时间. 只需要RN 提供的一个 Calendar 组件, 将最大时间和最小时间传进去即可
 
     ```JavaScript
       <Page
