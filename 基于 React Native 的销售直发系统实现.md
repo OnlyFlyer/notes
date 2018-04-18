@@ -428,7 +428,7 @@
     ```
   #### 选择服务站的实现`5.3.2.5`
 
-    选择服务站与SKU一样.
+    选择服务站, 选择服务站与选择SKU一样, 通过角色ID查询角色所复杂服务站, 返回列表, 通过FlatList组件渲染.
 
 
     ```JavaScript
@@ -452,6 +452,7 @@
 
     确认直发计划的实现
 
+    确认直发计划, 因为最后一页内容较多, 新增了 ScrollView 组件, 能够使得页面可上下滚动, 便于内容的展示, 最后一页是将前面的内容都集中起来显示, 并且添加修改功能, 最后确认无误后点击提交直发计划, 将所有的数据传送至服务端, 请求使用 fetch 进行提交, 封装一个 gateway 方法, Component 继承了 gateway 方法, 只需使用 this.gateway() 就可提交.
     ..
 
     ```JavaScript
@@ -541,6 +542,8 @@
       </Page>
     ```
   #### 个人主页的实现`5.3.2.6`
+
+    个人主页, 根据角色ID查询所有的数据, 并返回, 下面的 ItemMenu 是封装好的组件, 具体见 `附录2`.
 
     ```JavaScript
       <View style={s.contentContainer}>
@@ -696,42 +699,34 @@
       ```
   #### 应用下载的实现`5.3.2.9`
 
-  ```JavaScript
+  应用下载, 大部分组件使用与之前一样, 但应用下载页使用了一个特殊的组件 WebView, 是将网页嵌入原生 App 中, 在IOS中是好用的, 但在 Android 中不能够正常显示, 需要设定宽高才可以正常显示.
 
-    <Page
-      title={<Text style={{ fontWeight: 'bold', color: '#000' }} fontSize='$T17'>应用下载</Text>}
-      barStyle='dark-content'
-      leftContent={this._goBack()}
-      themeColor='#fff'
-    >
-      <View style={s.container}>
-        <WebView
-          ref={WEBVIEW_REF}
-          source={{uri: url}}
-          mixedContentMode='always'
-          renderError={this._renderError}
-          onNavigationStateChange={(e) => {
-            // console.log('e::', e)
-            if (e.url === url) {
-              return
-            }
-            Linking.openURL(e.url)
-              .then(
-                (res) => console.log('调用成功, res:', res))
-              .catch(
-                (err) => console.log('调用失败, error:', err)
-              )
-          }}
-          // injectJavaScript={() => Alert.alert('injectJavaScript')}
-          // injectedJavaScript="console.log('无名氏')"
-          javaScriptEnabled={this.state.jsEnabled}
-          scalesPageToFit={this.state.isScale}
-          domStorageEnabled={this.state.isDomStorage}
-          // onShouldStartLoadWithRequest={() => false}
-          onError={this._onError}
-        />
-      </View>
-    </Page>
+  ```JavaScript
+    <WebView
+      ref={WEBVIEW_REF}
+      source={{uri: url}}
+      mixedContentMode='always'
+      renderError={this._renderError}
+      onNavigationStateChange={(e) => {
+        // console.log('e::', e)
+        if (e.url === url) {
+          return
+        }
+        Linking.openURL(e.url)
+          .then(
+            (res) => console.log('调用成功, res:', res))
+          .catch(
+            (err) => console.log('调用失败, error:', err)
+          )
+      }}
+      // injectJavaScript={() => Alert.alert('injectJavaScript')}
+      // injectedJavaScript="console.log('无名氏')"
+      javaScriptEnabled={this.state.jsEnabled}
+      scalesPageToFit={this.state.isScale}
+      domStorageEnabled={this.state.isDomStorage}
+      // onShouldStartLoadWithRequest={() => false}
+      onError={this._onError}
+    />
 
   ```
 ## 本章小结
