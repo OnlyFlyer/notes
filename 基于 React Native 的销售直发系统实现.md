@@ -291,7 +291,7 @@
 
   #### 选择到货时间的实现`5.3.2.2`
 
-    选择到货时间. 只需要RN 提供的一个 Calendar 组件, 将最大时间和最小时间传进去即可
+    选择到货时间. 只需要RN 提供的一个 Calendar 组件, 将最大时间和最小时间传进去即可, 组件间的时间用时间戳表示
 
     ```JavaScript
       <Page
@@ -330,14 +330,9 @@
     ```
   #### 选择供应商的实现`5.3.2.3`
 
+  选择供应商, 根据角色ID获取供应商列表, 返回的数据使用 FlatList 组件渲染到页面
+
     ```JavaScript
-      <Page
-        title='选择供应商'
-        pageLoading={pageLoading}
-        leftContent={this._renderHeaderLeft()}
-        rightContent={this._renderHeadRight()}
-        barStyle='light-content'
-      >
         <SearchInput changeText={this._searchKeywords} />
         <FlatList
           data={copyRes}
@@ -345,13 +340,6 @@
           renderItem={this._renderProviderList}
           keyExtractor={(item, index) => index}
         />
-        <ModalCatSpinner
-          ref={(view) => { this._catSpinnerModal = view }}
-          catBaseVOList={catlist}
-          btnCatItem={this._btnCatItem}
-        />
-      </Page>
-    
       /**
         * @Description: 供应商列表
         * @author       吴涛
@@ -390,13 +378,9 @@
     ```
   #### 选择SKU的实现`5.3.2.4`
 
+  选择SKU, 选择SKU与选择供应商类似, 不过不同的是SKU列表是根据角色ID和供应商ID联合查询出的列表, 返回给客户端, 客户端同样使用 FlatList 组件渲染
+
     ```JavaScript
-    
-      <Page
-        title={'选择SKU'}
-        pageLoading={pageLoading}
-        leftContent={this._renderHeaderLeft()}
-      >
         <View style={s.itemTitle}>
           <Text color='$N11' fontSize='$T13'style={{flex: 1}}>供应商</Text>
           <Text color='$N11' fontSize='$T13'>{this.getRouteData('provider')}</Text>
@@ -409,8 +393,6 @@
           keyExtractor={(item, index) => index}
           />
         {this._renderBottomView()}
-      </Page>
-
       /**
       * @Description: 底部view
       * @author       chengfy@songxiaocai.com
@@ -430,29 +412,8 @@
         </View>
       )
 
-    
-      /**
-      * @desc      跳转到选择服务站页面
-      * @author       吴涛
-      * @date         17/7/17 19:57
-      */
-      _goChoiceStoreHouse=() => {
-        const skuIds = []
-        const checkedSku = []
-        if (!this.state.skulist) {
-          return
-        }
-        this.state.skulist.map((item) => {
-          if (item.checked) {
-            skuIds.push(item.skuId)
-            checkedSku.push(item)
-          }
-          return null
-        })
-        if (skuIds.length === 0) {
-          global.Toast.show('请至少选择一个商品')
-          return
-        }
+      这是组件之间传值的方式, 通过push 方法跳转到指定的路由, 后面的对象中包含传递的参数, this.getRouteData() 是从前面的组件获取参数.
+
         this.navigator().push('ChoiceStorehouseList', {
           provider: this.getRouteData('provider'),
           deliveryDate: this.getRouteData('deliveryDate'),
@@ -466,6 +427,9 @@
     
     ```
   #### 选择服务站的实现`5.3.2.5`
+
+    选择服务站与SKU一样.
+
 
     ```JavaScript
       <Page
@@ -487,6 +451,8 @@
     ```
 
     确认直发计划的实现
+
+    ..
 
     ```JavaScript
       <Page
