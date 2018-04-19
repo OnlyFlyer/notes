@@ -640,7 +640,7 @@
         <ItemInfo icon={Icon.IconPeopleBlue} menuInfo='姓名' info={saleUsers.userName} style={{marginTop: 10}} />
         <ItemInfo icon={Icon.IconCall} menuInfo='手机号' info={phone} clickEvent={() => {
           // 点击手机拨打电话功能未完成, 待修复
-          // Linking.openURL('tel' + Number(mobilePhone))
+          // Linking.openURL('tel://' + Number(mobilePhone))
             // .catch(() => {
             //   Alert.alert('拨打失败, 请重试!')
             // })
@@ -733,14 +733,14 @@
 
 本章使用 React Native 开发了销售直发系统 App, 从开发背景、 需求、UI 设计、数据库设计、实现等方面进行了仔细的阐述, 实践证明, React Native 确实能够提高开发效率, 而且用户体验上面也不错, 下面的为运行截图.
 
-![](./important/direct_android/direct_.png)
-![](./important/direct_android/direct_sku.png)
-![](./important/direct_android/direct_供应商.png)
 ![](./important/direct_android/direct_入口.png)
-![](./important/direct_android/direct_创建成功.png)
 ![](./important/direct_android/direct_到货时间.png)
-![](./important/direct_android/direct_完善计划.png)
+![](./important/direct_android/direct_.png)
+![](./important/direct_android/direct_供应商.png)
+![](./important/direct_android/direct_sku.png)
 ![](./important/direct_android/direct_服务站.png)
+![](./important/direct_android/direct_完善计划.png)
+![](./important/direct_android/direct_创建成功.png)
 
 
 
