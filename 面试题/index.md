@@ -28,10 +28,11 @@ taro 为什么能生成多个端
 
 3. 恒生云融
 
-redux 的实现
+redux 的实现 V
 ts 的泛型
 connect 函数
 react 生命周期
+redux 异步操作的实现
 hooks useEffect的参数，useState的set State，同步还是异步
 
 4. 青麦供应链
@@ -42,12 +43,12 @@ hooks useEffect的参数，useState的set State，同步还是异步
 
 6. 老虎集团
 
-闭包，实践
+闭包，实践 V
 css: bfc
-React 组件复用的方式: 高阶，组合继承
-防抖和节流
+React 组件复用的方式: 高阶，组合优于继承 V V
+防抖和节流 V
 
-url 到展示页面
+url 到展示页面 V
 
-强制缓存和协商缓存
-浅拷贝和深拷贝
+强制缓存和协商缓存 V
+浅拷贝和深拷贝 V
