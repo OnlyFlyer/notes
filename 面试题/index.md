@@ -74,3 +74,37 @@ position 的值
 absolute 和 fixed 的区别
 absolute 定位方式，相对于谁定位，已定位的祖先元素
 relative 相对于自己定位
+
+8. 政采云
+
+
+json.stringify 三个参数，看懂，理解
+
+序列化 函数 怎么实现，怎么用json.stringify 实现
+
+分片，服务端如何检测丢包，md5
+
+跨域资源共享在cookie传参时能否加 “*”
+
+技术细节不行
+
+局限于技术，站在业务的角度解决问题
+
+动态表单，页面搭建
+
+9. 安恒
+
+Css
+框架层面
+
+linux、nginx、nodejs
+
+react 新的东西 fiber ****
+h5缓存，MPA 的情况，网页刷新的情况
+
+http 1.0  http1.1  http 2.0  http3.0 各解决了那些问题 ****
+
+add(1)(2,3)(4,5,6) **
+
+Css 图片
+
