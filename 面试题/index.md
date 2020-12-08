@@ -77,6 +77,13 @@ relative 相对于自己定位
 
 8. 政采云
 
+怎么做埋点监控
+
+路由 hash 和 history
+
+等等..
+
+---
 
 json.stringify 三个参数，看懂，理解
 
