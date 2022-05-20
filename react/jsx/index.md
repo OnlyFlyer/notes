@@ -15,7 +15,6 @@ createElement 参数：
 
 ```JavaScript
 
-
 <div>
   <TextComponent />
   <div>hello world</div>
@@ -75,7 +74,82 @@ fiber 对应关系
 map 返回数组结构，作为 fragment 的子节点
 
 
+<!-- 扁平化 children 数组，还可深层次 flat -->
 React.Children.toArray(children)
+
+React.Children.forEach = React.Children.toArray + Array.prototyp.forEach
+
+<!-- 检测是否为 React Element 元素 -->
+React.isValidElement(element)
+
+React.cloneElement：以 element 元素为样板克隆并返回新的 React element 元素，返回元素的 props 是将新的 props 与原始元素的 props 浅层合并后的结果
+
+
+问： React.createElement 和 React.cloneElement 到底有什么区别？
+答：一个为了创建，一个为了修改，返回值均为 React element 对象
+
+
+JSX 语法实现源于
+
+@babel/plugin-syntax-jsx：能让 Babel 解析 JSX 语法
+
+@babel/plugin-transform-react-jsx：内部调用了 @babel/plugin-syntax-jsx，可以把 React JSX 转换成 JS 能够识别的 createElement 格式。
+
+两个插件
+
+Automatic Runtime
+
+```JavaScript
+
+import { jsx as _jsx } from 'react/jsx-runtime';
+import { jsxs as _jsxs } from 'react/jsx-runtime';
+
+
+function Index() {
+  return _jsxs('div', {
+    children: [
+      _jsx('h1', {children: 'hello world'}),
+      _jsx('span', {children: 'hhh'})
+    ]
+  })
+}
+
+```
+
+需要设置
+
+
+```JavaScript
+
+.babelrc
+
+presets: [
+  ['@babel/preset-react', {
+    runtime: 'automatic'
+  }]
+]
+
+```
+
+Classic Runtime
+
+
+使用 JSX 需要引入 React，不然会报错
+
+```JavaScript
+
+import React from 'react';
+
+function Index() {
+  return React.createElement(
+    'div',
+    null,
+    React.createElement('h1', null, 'hello world'),
+    React.createElement('span', null, 'hhh'),
+  )
+}
+
+```
 
 
 
