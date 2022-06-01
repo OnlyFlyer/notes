@@ -1,6 +1,10 @@
 # notes（前端知识体系）
 
 
+## React 技术揭秘
+
+https://react.iamkasong.com/preparation/oldConstructure.html#react15%E6%9E%B6%E6%9E%84
+
 ## HTML & CSS
 
 #### flexBox
