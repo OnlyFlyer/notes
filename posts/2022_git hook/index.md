@@ -18,3 +18,35 @@ $: git config --global user.email "***@**.**"
 ```
 
 
+`commit-msg` `hook` 方式
+
+```bash
+
+# 验证 git user【用户名/邮箱】
+repository_name=$(git config user.name)
+readonly repository_name
+repository_email=$(git config user.email)
+readonly repository_email
+current_commitMsg=`cat $1`
+readonly current_commitMsg
+
+msg_regex="^(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|release|workflow)(\(.+\))?: .{1,100}"
+email_regex="^[a-zA-Z0-9._%+-]+@cai\-inc.com$"
+
+# user.name | user.email is empty
+if [ -z "$repository_email" ] || [ -z "$repository_name" ]; then
+	# user.email is empty
+	echo "ERROR: [pre-commit hook] Aborting commit because user.email or user.name is missing, Please check your git config."
+	exit 1
+# user.email is not zcy email
+elif [[ ! $repository_email =~ $email_regex ]]; then
+	echo "ERROR: [pre-commit hook] Aborting commit because $repository_email is not ZCY email, Please check your git config."
+	exit 1
+# commit msg valid
+elif [[ ! $current_commitMsg =~ $msg_regex  ]]; then
+	echo "ERROR: [pre-commit hook] Aborting commit because $current_commitMsg is not a good commit msg, Please check your commit msg."
+	exit 1
+fi
+
+```
+
