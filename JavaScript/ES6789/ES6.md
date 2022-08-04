@@ -39,3 +39,35 @@ NaN 和 NaN 是相等的（虽然 NaN !== NaN），其他所有值都是根据 =
 5. `Map` 是可迭代的，可通过 for...of 遍历，Object 不行，可以通过 Object.keys、Object.entries、for...in 遍历
 6. `Map` 在频繁增删键值对的场景下性能更好，Object 未对该场景做优化
 7. `Map` 没有元素的序列化和解析的支持（但是你可以使用携带 replacer 参数的 JSON.stringify() 创建一个自己的对 Map 的序列化和解析支持，参考：https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map），Object 原生支持 stringify 和 parse
+
+#### Map 与数组的关系
+
+```JavaScript
+
+// 使用常规的 Map 构造函数可以将 二维键值对数组转换成 一个 Map 对象
+const kv = [['a', 1], ['b', 2], ['c', 3]]
+const hashMap = new Map(kv);
+
+hashMap.get('a') // 1
+
+console.log(Array.from(hashMap)) // [['a', 1], ['b', 2], ['c', 3]]
+
+console.log([...hashMap]) // [['a', 1], ['b', 2], ['c', 3]]
+
+// 获取 keys
+console.log(Array.from(hashMap.keys())) // ['a', 'b', 'c']
+
+```
+
+#### 复制，合并 Maps
+
+```JavaScript
+
+const original = new Map([[1, 'one']]);
+
+const cloneMap = new Map(original);
+
+console.log(cloneMap.get(1)) // one
+console.log(cloneMap === original) // false，不是同一个对象引用
+
+```
