@@ -24,6 +24,8 @@ https://react.iamkasong.com/preparation/oldConstructure.html#react15%E6%9E%B6%E6
 
 ##  JavaScript
 
+#### ES6、ES7、ES8、ES9
+
 
 #### 闭包
 
