@@ -151,7 +151,6 @@ function performUnitOfWork(fiber) {
       }
       nextFiber = nextFiber.parent;
     }
-
   }
 
 ```
@@ -205,6 +204,126 @@ requestIdleCallback(workLoop);
 
 ## 6. Reconciliation（协调） Diff 算法
 
+```JavaScript
+
+/** 
+ * Diff 的过程其实是 fiber 比较的过程，为了比较 fiber 的变化，React 在 递归创建 Fiber 的时候 上新增了一个 alternate 属性用于存储上一次的 fiber 值，比较大体分为 3 类， 第一类，type 的比较，如果前后 fiber 节点 type 一致，说明只是改动，会标记此次改动为 update，第二类，是 新的 fiber 存在 但 type 不同，这种情况属于新增的范畴，会标记此次改动为 add，第三类，old fiber 存在但 type 不同，这种情况属于删除范畴，需要将 old fiber 删除，会标记为 delete，这个过程就属于协调过程， reconciler 阶段，然后在 commit 阶段会根据 刚才我们标记的 类型 像 add、update、delete 来新增、更新、删除 dom
+*/
+
+function renconcileChildren(wipFiber, elements){
+    let index = 0;
+    let prevSibling = null;
+    let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+    while (index < elements.length || oldFiber !== null) {
+      const element = elements[index];
+      // 比较 oldFiber 和 element
+      let newFiber = null
+      const sameType = oldFiber && element && oldFiber.type === element.type;
+      if (sameType) {
+        // 相同类型
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: oldFiber.dom,
+          parent: wipFiber,
+          alternate: oldFiber,
+          effectTag: UPDATE_TYPE,
+        }
+      }
+      if (element && !sameType) {
+        // 新增这个节点
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: null,
+          parent: wipFiber,
+          alternate: null,
+          effectTag: PLACE_TYPE,
+        }
+      }
+      if (oldFiber && !sameType) {
+        // 删除节点
+        oldFiber.effectTag = DELETE_TYPE;
+        delections.push(oldFiber);
+      }
 
 
+      if (index === 0) {
+        wipFiber.child = newFiber;
+      } else {
+        prevSibling.sibling = newFiber;
+      }
+      prevSibling = newFiber;
+      index++;
+    }
+  }
 
+  function updateDom(dom, prevProps, nextProps) {
+    const isEvent = key => key.startsWith('on');
+    // 特殊的属性处理（事件，以 on 开头的）
+    const isProperty = key => key !== 'children' && isEvent(key);
+    const isNew = (prev, next) => (key) => prev[key] !== next[key];
+    const isGone = (prev, next) => (key) => !(key in next);
+    // 1. 删除老的不用的属性
+    Object.keys(prevProps)
+      .filter(isProperty)
+      .filter(isGone(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = '';
+      });
+
+    // 2. 设置或者改变新的属性
+    Object.keys(nextProps)
+      .filter(isProperty)
+      .filter(isNew(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = nextProps[propName];
+      });
+
+    // 3. 删除不用的或者已改变的事件监听
+    Object.keys(prevProps)
+      .filter(isEvent)
+      .filter(key => {
+        return !(key in nextProps) || isNew(prevProps, nextProps)(key);
+      })
+      .forEach((propName) => {
+        const eventType = propName.toLowerCase().substring(2);
+        dom.removeEventListener(propName, prevProps[propName]);
+      });
+
+    // 4. 创建新的事件监听
+    Object.keys(nextProps)
+      .filter(isEvent)
+      .filter(isNew(prevProps, nextProps))
+      .forEach((propName) => {
+        const eventType = propName.toLowerCase().substring(2);
+        dom.addEventListener(eventType, nextProps[propName]);
+      });
+  };
+
+  function commitWork(fiber) {
+    if (!fiber) return;
+    const domParent = fiber.parent.dom;
+    if (fiber.effectTag === PLACE_TYPE && fiber.dom !== null) {
+      domParent.appendChild(fiber.dom);
+    } else if (fiber.effectTag === DELETE_TYPE) {
+      domParent.removeChild(fiber.dom);
+    } else if (fiber.effectTag === UPDATE_TYPE && fiber.dom !== null) {
+      updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+    }
+    commitWork(fiber.child);
+    commitWork(fiber.sibling);
+  }
+
+  function commitRoot() {
+    delections.forEach(commitWork);
+    commitWork(wipRoot);
+    currentRoot = wipRoot;
+    wipRoot = null;
+  }
+
+```
+
+## 7. Function Components（函数式组件）
+
+asd

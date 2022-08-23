@@ -15,8 +15,13 @@
   const container = document.getElementById('root');
   let nextUnitOfWork = null;
   let wipRoot = null;
+  let currentRoot = null;
+  let delections = null;
 
   const TEXT_ELEMENT_TYPE = 'TEXT_ELEMENT';
+  const UPDATE_TYPE = 'UPDATE';
+  const PLACE_TYPE = 'PLACEMENT';
+  const DELETE_TYPE = 'DELETION';
 
   function createTextElement(text) {
     return {
@@ -46,24 +51,87 @@
       dom: container,
       props: {
         children: [element],
-      }
+      },
+      alternate: currentRoot,
     }
+    delections = [];
     nextUnitOfWork = wipRoot;
-    // return wipRoot;
   };
 
+
+  function updateDom(dom, prevProps, nextProps) {
+    const isEvent = key => key.startsWith('on');
+    // 特殊的属性处理（事件，以 on 开头的）
+    const isProperty = key => key !== 'children' && isEvent(key);
+    const isNew = (prev, next) => (key) => prev[key] !== next[key];
+    const isGone = (prev, next) => (key) => !(key in next);
+    // 1. 删除老的不用的属性
+    Object.keys(prevProps)
+      .filter(isProperty)
+      .filter(isGone(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = '';
+      });
+
+    // 2. 设置或者改变新的属性
+    Object.keys(nextProps)
+      .filter(isProperty)
+      .filter(isNew(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = nextProps[propName];
+      });
+
+    // 3. 删除不用的或者已改变的事件监听
+    Object.keys(prevProps)
+      .filter(isEvent)
+      .filter(key => {
+        return !(key in nextProps) || isNew(prevProps, nextProps)(key);
+      })
+      .forEach((propName) => {
+        const eventType = propName.toLowerCase().substring(2);
+        dom.removeEventListener(propName, prevProps[propName]);
+      });
+
+    // 4. 创建新的事件监听
+    Object.keys(nextProps)
+      .filter(isEvent)
+      .filter(isNew(prevProps, nextProps))
+      .forEach((propName) => {
+        const eventType = propName.toLowerCase().substring(2);
+        dom.addEventListener(eventType, nextProps[propName]);
+      });
+  };
+
+  function commitDeletion(fiber, domParent) {
+    if (fiber.dom) {
+      domParent.removeChild(fiber.dom);
+    } else {
+      commitDeletion(fiber.child, domParent);
+    }
+  }
   function commitWork(fiber) {
     if (!fiber) return;
-    if (fiber.dom && fiber.parent && fiber.parent.dom) {
-      const domFarent = fiber.parent.dom;
-      domFarent.appendChild(fiber.dom);
+    let domParentFiber = fiber.parent;
+    while (!domParentFiber.dom) {
+      domParentFiber = domParentFiber.parent;
+    }
+    const domParent = domParentFiber.dom;
+    if (fiber.effectTag === PLACE_TYPE && fiber.dom !== null) {
+      domParent.appendChild(fiber.dom);
+    } else if (fiber.effectTag === DELETE_TYPE) {
+      // domParent.removeChild(fiber.dom);
+      commitDeletion(fiber, domParent);
+    } else if (fiber.effectTag === UPDATE_TYPE && fiber.dom !== null) {
+      updateDom(fiber.dom, fiber.alternate.props, fiber.props);
     }
     commitWork(fiber.child);
     commitWork(fiber.sibling);
   }
 
   function commitRoot() {
+    delections.forEach(commitWork);
     commitWork(wipRoot);
+    currentRoot = wipRoot;
     wipRoot = null;
   }
 
@@ -86,6 +154,7 @@
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       shouldYield = deadline.timeRemaining() < 1;
     }
+    // console.log(wipRoot, '--wipRoot');
     if (nextUnitOfWork && wipRoot) {
       commitRoot();
     }
@@ -93,7 +162,59 @@
   }
   requestIdleCallback(workLoop);
   
-  function performUnitOfWork(fiber) {
+  function renconcileChildren(wipFiber, elements){
+    let index = 0;
+    let prevSibling = null;
+    let oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+    while (index < elements.length || oldFiber !== null) {
+      const element = elements[index];
+      // 比较 oldFiber 和 element
+      let newFiber = null
+      const sameType = oldFiber && element && oldFiber.type === element.type;
+      if (sameType) {
+        // 相同类型
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: oldFiber.dom,
+          parent: wipFiber,
+          alternate: oldFiber,
+          effectTag: UPDATE_TYPE,
+        }
+      }
+      if (element && !sameType) {
+        // 新增这个节点
+        newFiber = {
+          type: element.type,
+          props: element.props,
+          dom: null,
+          parent: wipFiber,
+          alternate: null,
+          effectTag: PLACE_TYPE,
+        }
+      }
+      if (oldFiber && !sameType) {
+        // 删除节点
+        oldFiber.effectTag = DELETE_TYPE;
+        delections.push(oldFiber);
+      }
+
+
+      if (index === 0) {
+        wipFiber.child = newFiber;
+      } else {
+        prevSibling.sibling = newFiber;
+      }
+      prevSibling = newFiber;
+      index++;
+    }
+  }
+
+  function updateFunctionComponent(fiber) {
+    const children = [fiber.type(fiber.props)]
+    renconcileChildren(fiber, children);
+  }
+  function updateHostComponent(fiber) {
     // 增加 dom 节点，还需要将子节点加到父节点上
     if (!fiber.dom) {
       fiber.dom = createDom(fiber);
@@ -103,24 +224,15 @@
     // }
     // 创建一个新的 fiber
     const elements = fiber.props.children;
-    let index = 0;
-    let prevSibling = null;
-    while (index < elements.length) {
-      const element = elements[index];
-      const newFiber = {
-        type: element.type,
-        props: element.props,
-        parent: fiber,
-        dom: null,
-      }
+    renconcileChildren(fiber, elements);
+  }
 
-      if (index === 0) {
-        fiber.child = newFiber;
-      } else {
-        prevSibling.sibling = newFiber;
-      }
-      prevSibling = newFiber;
-      index++;
+  function performUnitOfWork(fiber) {
+    const isFunctionComponent = fiber.type instanceof Function;
+    if (isFunctionComponent) {
+      updateFunctionComponent(fiber);
+    } else {
+      updateHostComponent(fiber);
     }
 
     // 返回下一个工作单元
@@ -141,9 +253,11 @@
     render,
   }
 
+  const rootNode = document.getElementById('root');
   const ele = Didact.createElement('h1', {title: 'foo'}, 'Hello', Didact.createElement('span', {title: 'hehe'}, 'haha'));
-  Didact.render(ele, document.getElementById('root'));
+  Didact.render(ele, rootNode);
   console.log(ele, '--ele')
+  console.log(rootNode, '--rootNode')
 
   // function animationWidth() {
   //   const div = document.getElementById('root');
