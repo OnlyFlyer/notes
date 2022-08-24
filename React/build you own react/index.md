@@ -326,4 +326,8 @@ function renconcileChildren(wipFiber, elements){
 
 ## 7. Function Components（函数式组件）
 
-asd
+待补充
+
+## 8. Hooks（useState）
+
+待补充

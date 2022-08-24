@@ -9,14 +9,16 @@
 <body>
   <div id="root" style="background: red;width: 0px;"></div>
 </body>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<!-- <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script> -->
 <script>
   const container = document.getElementById('root');
   let nextUnitOfWork = null;
   let wipRoot = null;
   let currentRoot = null;
   let delections = null;
+  let wipFiber = null;
+  let hookIndex = null;
 
   const TEXT_ELEMENT_TYPE = 'TEXT_ELEMENT';
   const UPDATE_TYPE = 'UPDATE';
@@ -46,9 +48,9 @@
     }
   }
 
-  function render(element, container) {
+  function render(element, c) {
     wipRoot = {
-      dom: container,
+      dom: c,
       props: {
         children: [element],
       },
@@ -62,26 +64,10 @@
   function updateDom(dom, prevProps, nextProps) {
     const isEvent = key => key.startsWith('on');
     // 特殊的属性处理（事件，以 on 开头的）
-    const isProperty = key => key !== 'children' && isEvent(key);
+    const isProperty = key => key !== 'children' && !isEvent(key);
     const isNew = (prev, next) => (key) => prev[key] !== next[key];
     const isGone = (prev, next) => (key) => !(key in next);
-    // 1. 删除老的不用的属性
-    Object.keys(prevProps)
-      .filter(isProperty)
-      .filter(isGone(prevProps, nextProps))
-      .forEach((propName) => {
-        dom[propName] = '';
-      });
-
-    // 2. 设置或者改变新的属性
-    Object.keys(nextProps)
-      .filter(isProperty)
-      .filter(isNew(prevProps, nextProps))
-      .forEach((propName) => {
-        dom[propName] = nextProps[propName];
-      });
-
-    // 3. 删除不用的或者已改变的事件监听
+    // 1. 删除不用的或者已改变的事件监听
     Object.keys(prevProps)
       .filter(isEvent)
       .filter(key => {
@@ -90,6 +76,22 @@
       .forEach((propName) => {
         const eventType = propName.toLowerCase().substring(2);
         dom.removeEventListener(propName, prevProps[propName]);
+      });
+
+    // 2. 删除老的不用的属性
+    Object.keys(prevProps)
+      .filter(isProperty)
+      .filter(isGone(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = '';
+      });
+    
+    // 3. 设置或者改变新的属性
+    Object.keys(nextProps)
+      .filter(isProperty)
+      .filter(isNew(prevProps, nextProps))
+      .forEach((propName) => {
+        dom[propName] = nextProps[propName];
       });
 
     // 4. 创建新的事件监听
@@ -109,6 +111,7 @@
       commitDeletion(fiber.child, domParent);
     }
   }
+  
   function commitWork(fiber) {
     if (!fiber) return;
     let domParentFiber = fiber.parent;
@@ -130,7 +133,7 @@
 
   function commitRoot() {
     delections.forEach(commitWork);
-    commitWork(wipRoot);
+    commitWork(wipRoot.child);
     currentRoot = wipRoot;
     wipRoot = null;
   }
@@ -139,11 +142,8 @@
     const dom = fiber.type === TEXT_ELEMENT_TYPE
       ? document.createTextNode("")
       : document.createElement(fiber.type);
-    Object.keys(fiber.type)
-      .filter(key => key !== 'children')
-      .forEach((name) => {
-        dom[name] = fiber.props[name];
-      });
+    
+    updateDom(dom, {}, fiber.props);
     return dom;
   }
   
@@ -154,8 +154,7 @@
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       shouldYield = deadline.timeRemaining() < 1;
     }
-    // console.log(wipRoot, '--wipRoot');
-    if (nextUnitOfWork && wipRoot) {
+    if (!nextUnitOfWork && wipRoot) {
       commitRoot();
     }
     requestIdleCallback(workLoop);
@@ -198,11 +197,13 @@
         oldFiber.effectTag = DELETE_TYPE;
         delections.push(oldFiber);
       }
-
+      if (oldFiber) {
+        oldFiber = oldFiber.sibling;
+      }
 
       if (index === 0) {
         wipFiber.child = newFiber;
-      } else {
+      } else if (element) {
         prevSibling.sibling = newFiber;
       }
       prevSibling = newFiber;
@@ -211,6 +212,9 @@
   }
 
   function updateFunctionComponent(fiber) {
+    wipFiber = fiber;
+    hookIndex = 0;
+    wipFiber.hooks = [];
     const children = [fiber.type(fiber.props)]
     renconcileChildren(fiber, children);
   }
@@ -236,28 +240,65 @@
     }
 
     // 返回下一个工作单元
-    if (fiber.child) {
-      return fiber.child;
-    }
+    if (fiber.child) return fiber.child;
     let nextFiber = fiber;
     while (nextFiber) {
-      if (nextFiber.sibling) {
-        return nextFiber.sibling;
-      }
+      if (nextFiber.sibling) return nextFiber.sibling;
       nextFiber = nextFiber.parent;
     }
+  }
+
+  function useState(initial) {
+    const oldHook = wipFiber.alternate && wipFiber.alternate.hooks && wipFiber.alternate.hooks[hookIndex];
+    const hook = {
+      state: oldHook ? oldHook.state : initial,
+      queue: [],
+    }
+    const actions = oldHook ? oldHook.queue : [];
+    actions.forEach(action => {
+      const newState = typeof action === 'function' ? action(hook.state) : action;
+      hook.state = newState;
+    });
+    const setState = action => {
+      hook.queue.push(action);
+      wipRoot = {
+        dom: currentRoot.dom,
+        props: currentRoot.props,
+        alternate: currentRoot,
+      }
+      nextUnitOfWork = wipRoot;
+      delections = [];
+    }
+    wipFiber.hooks.push(hook);
+    hookIndex++;
+    return [hook.state, setState];
   }
 
   const Didact = {
     createElement,
     render,
+    useState,
   }
 
-  const rootNode = document.getElementById('root');
-  const ele = Didact.createElement('h1', {title: 'foo'}, 'Hello', Didact.createElement('span', {title: 'hehe'}, 'haha'));
-  Didact.render(ele, rootNode);
-  console.log(ele, '--ele')
-  console.log(rootNode, '--rootNode')
+  const ele = Didact.createElement('div', {
+    title: 'div',
+    style: "background: yellow;width: 100px;padding: 5px;",
+  },
+    Didact.createElement('span', { title: 'span', style: "color: crimson;" }, 'span'),
+    Didact.createElement('h2', {title: 'h2'}, 'h2'),
+    'div'
+  );
+  function Count() {
+    const [state, setState] = useState(0);
+    return Didact.createElement('h1', {onClick: () => {
+      setState(state+1);
+    } }, `Count: ${state}`);
+  }
+  Didact.render(ele, container);
+  console.log(ele, '--ele');
+  console.log(container, '--container');
+  console.log(wipRoot, '--wipRoot');
+  
 
   // function animationWidth() {
   //   const div = document.getElementById('root');
