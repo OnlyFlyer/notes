@@ -330,4 +330,16 @@ function renconcileChildren(wipFiber, elements){
 
 ## 8. Hooks（useState）
 
+
+hook 是一个链表，为什么？
+
+因为在一个组件中可能会调用多个 hook，而且React 必须保证调用顺序正确，所以只能用链表或者数组的方式储存，而链表更好进行更新，因此采用的链表。
 待补充
+
+
+实现过程需要区别 mount 和 update
+
+
+useReducer 与 useState 的区别？
+
+useReducer 和 useState 实现基本一样，区别就是 useState 相当于预设了一个 reducer，而 useReducer 需要我们自定义传入 reducer
