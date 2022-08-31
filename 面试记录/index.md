@@ -1,0 +1,128 @@
+## 面试记录
+
+
+### 百世
+
+1. 分列列表，第99页数据量较大，响应时长在 2s 左右，第100页数据量较小，响应时长在 200ms，用户先点击99页数据，然后在 100 ms 内再点击 100页，正常应该呈现第 100 页的数据，你会如何处理？
+
+解决方式：
+
+全局 loading，避免出现这种情况
+存一个状态，请求数组集合，将请求方法存储，当用户切页时，abort 未完成的请求，ajax、fetch
+伪取消：封装 request，使用 promise，定义一个 cancel 函数，用于 reject 数据，当用户切页时触发 cancel 函数
+
+2. fetch 是否可以取消，XMLHttpRequest，axios，fetch，取消的请求有没有发送到服务端，服务端有没有正常接收并响应
+
+ajax：一种思想，实现页面局部刷新，XMLHttpRequest 属于实现方式，构造函数
+fetch：ES6，使用了 Promise，是 XMLHttpRequest 的替代方式（优点：1. 链式调用，2. 模块化，res，err 分开），取消使用 AbortController，signal，new AbortController().abort，signal 可挂载多个请求，批量取消
+axios：封装的库，取消请求用 cancelToken
+
+
+还是发送到了服务器端，一般查询没问题，服务器查多次，但客户端只渲染一次，
+
+缺点：对于增删改来说，可能会出现脏数据
+
+
+3. Http 缓存
+
+保存缓存资源副本，在下一次请求时使用副本
+
+使用 http 缓存，复用缓存资源，减少客户端等待和网络流量，同时也能缓解服务器压力，提高网站的性能
+
+强制缓存
+
+介绍流程
+重点字段
+
+强缓存不会向服务器发送请求，直接从缓存中读取资源，并返回 200 的状态吗，在 size 那里会展示 from disk cache / from memery cache
+
+Expires： HTTP/1.0，代表过期时间（服务端时间），客户端与服务端可能存在差异
+Cache-Controll：HTTP/1.1，通过多个指令实现缓存机制，资源缓存的最大有效时间，在时间段内，不需要向服务器发送请求
+
+可缓存：public、private、no-cache、no-store
+过期：
+
+only-if-cached：不进行网络请求，完全只使用缓存
+
+通过 Expires 和 Cache-Controll 配置响应头，均存在的话 Cache-Controll 优先级高于 Expires
+
+协商缓存
+
+客户端先向服务器发送请求，服务器通过 request header 上一些参数判断是否命中协商缓存，如果命中，返回 304 状态吗，并带上新的 response header 通知浏览器从缓存中读取资源
+
+Last-Modified/Last-Modified-Since
+
+GMT 格式的时间字符串，代表的是文件的最后修改时间。
+
+第一次响应时会在 response header 上写入 字段 Last-Modified
+再一次发起请求会带 Last-Modified-Since 字段，服务器收到后会比对服务器的最后修改时间和请求头的时间，命中，返回 304，告知浏览器使用缓存，如果未命中，传输整个主体，返回 200，并写入浏览器缓存
+
+Etag/If-none-Match
+
+服务器为每一份资源生成的唯一标识，跟时间无关，跟资源有关，资源不变，Etag 不变，
+
+请求报文会包含 If-None-Match 字段，字段值为服务器上一次响应的 Etag 值，如果一致，返回 304，读缓存，如果不一致，传输新的报文主体，并写入浏览器缓存
+
+
+4. 图片按需加载的实现原理
+
+原因：
+  浏览器是否发送请求是根据 src 属性，所以说在图片未进入可是区域内就不赋值 src就可以了
+
+
+ 初始化的时候创建 img 标签，样式，但是不赋值 src 属性，然后监听滚动事件，当图片滚动到可视区域内时，在创建一个 Image 标签，赋值 src，加载完后，将 地址赋值给 dom 中的 img 标签，滚动事件加上节流函数
+
+ IntersectionObserver
+
+
+5. 实现继承的几种方式
+
+函数都有原型对象
+对象（除开 null）都有一个私有变量，叫 __proto__
+
+原型继承
+
+```JavaScript
+function Parent() {
+  this.a = [1];
+}
+
+Parent.prototype.sayHi = function() {
+  console.log('hi');
+}
+function Child() {}
+
+// 子函数的 prototype
+Child.prototype = new Parent();
+
+const child = new Child();
+
+child.sayHi(); // hi
+
+```
+
+构造函数
+组合继承
+寄生继承
+class extends
+
+6. setState 同步还是异步
+
+7. 如何理解 fiber，fiber 的作用
+
+8. useEffect 和 useLayoutEffect 的区别，使用场景
+
+9. React 如何处理事件
+
+
+
+function Foo() {}
+
+const foo = new Foo();
+
+foo.__proto__ === Foo.prototype
+
+Foo.prototype.__proto__ === Object.prototype
+
+
+Object.prototype.__proto__ === null
