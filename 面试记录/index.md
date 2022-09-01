@@ -1,7 +1,7 @@
 ## 面试记录
 
 
-### 百世
+### 百世一面
 
 1. 分列列表，第99页数据量较大，响应时长在 2s 左右，第100页数据量较小，响应时长在 200ms，用户先点击99页数据，然后在 100 ms 内再点击 100页，正常应该呈现第 100 页的数据，你会如何处理？
 
@@ -17,11 +17,9 @@ ajax：一种思想，实现页面局部刷新，XMLHttpRequest 属于实现方�
 fetch：ES6，使用了 Promise，是 XMLHttpRequest 的替代方式（优点：1. 链式调用，2. 模块化，res，err 分开），取消使用 AbortController，signal，new AbortController().abort，signal 可挂载多个请求，批量取消
 axios：封装的库，取消请求用 cancelToken
 
-
-还是发送到了服务器端，一般查询没问题，服务器查多次，但客户端只渲染一次，
+还是发送到了服务器端，一般查询没问题，服务器查多次，但客户端只渲染一次
 
 缺点：对于增删改来说，可能会出现脏数据
-
 
 3. Http 缓存
 
@@ -63,6 +61,7 @@ Etag/If-none-Match
 
 请求报文会包含 If-None-Match 字段，字段值为服务器上一次响应的 Etag 值，如果一致，返回 304，读缓存，如果不一致，传输新的报文主体，并写入浏览器缓存
 
+获取数据用缓存，增删改不用
 
 4. 图片按需加载的实现原理
 
@@ -108,21 +107,36 @@ class extends
 
 6. setState 同步还是异步
 
+legacy、blocking、concurrent
+一般情况是异步的，因为 React 中又个比较重要的概念，批处理（batchUpdates），将本次需要更新的所有状态收集起来批量更新，节约性能开销，
+
 7. 如何理解 fiber，fiber 的作用
+
 
 8. useEffect 和 useLayoutEffect 的区别，使用场景
 
+
+useEffect 是异步执行副作用，能满足大部分场景
+useLayoutEffect 是同步执行副作用，不要在内部写大量的计算逻辑，可能造成卡顿，页面阻塞
+
 9. React 如何处理事件
 
+### 古茗一面
+
+1. WebRTC 的流程
 
 
-function Foo() {}
 
-const foo = new Foo();
-
-foo.__proto__ === Foo.prototype
-
-Foo.prototype.__proto__ === Object.prototype
+2. EventLoop 机制，为什么要设计 宏任务、微任务
 
 
-Object.prototype.__proto__ === null
+3. 如何实现一个 类似宏任务、微任务 队列，代码片段
+
+
+4. 浏览器有哪些微任务、宏任务
+
+
+5. 把一个请求用 Promise 来包装，好还是不好，优缺点？
+
+
+6. React 如何实现响应式，如何实现？
