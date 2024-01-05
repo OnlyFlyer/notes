@@ -17,7 +17,7 @@ function debounce(fn, delay = 200) {
 
 // 2. 多次点击，只执行第一次
 
-fucntion debounce1 (fn, delay) {
+function debounce1 (fn, delay) {
   let timer = null
   return function () {
     const that = this

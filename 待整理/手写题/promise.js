@@ -1,5 +1,5 @@
 new Promise((reolve, reject) => {
-  
+
 })
 
 class MyPromise {
@@ -248,7 +248,7 @@ MyPromise.any = function (promises) {
 }
 
 MyPromise.race = function (promises) {
-  return MyPromise((resolve, reject) => {
+  return new MyPromise((resolve, reject) => {
     if (!Array.isArray(promises)) {
       reject(new Error('Argument is not a iterator!'));
     } else {
