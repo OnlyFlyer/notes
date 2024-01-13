@@ -303,3 +303,16 @@ function shallowEqual(objA: mixed, objB: mixed): boolean {
 1. JSX 语法
 2. 单向数据流
 3. 虚拟DOM
+
+## （技术面）有什么问题
+
+1. 团队情况，业务
+2. 培训计划
+3. 技术氛围，有无分享这种
+
+## （HR面）可能提的问题
+
+1. 职业规划
+2. 对加班的看法
+3. 离职原因
+4. 谈薪资 argue

@@ -74,6 +74,121 @@ class MyPromise {
       };
     });
   };
+  catch = (onRejected) => {
+    return this.then(null, onRejected);
+  };
+  finally = (endCallback) => {
+    return this.then(
+      (val) => {
+        // 为什么要使用 resolve 执行 endCallback，之后再继续执行 then，返回结果？
+        // 因为如果 endCallback 如果是个异步任务，则需要等 endCallback 执行完后再返回数据，即
+        // 在 finally 后面再跟 .then 仍然要获取到值，因此需要传递下去
+        return MyPromise.resolve(endCallback()).then(() => val);
+      },
+      (reason) => {
+        return MyPromise.resolve(endCallback()).then(() => { throw new Error(reason) });
+      },
+    );
+  };
+  // 1. 接收一个 promise list
+  // 2. 全部成功，才成功，返回所有的值，又一个失败就失败，返回失败的那个
+  all = (promises = []) => {
+    let count = 0;
+    let result = [];
+    function addResult(val, index, resolve) {
+      result[index] = val;
+      count++;
+      if (count === promises.length) {
+        resolve(result);
+      }
+    };
+    return new MyPromise((resolve, reject) => {
+      promises.forEach((promise, index) => {
+        if (promise instanceof MyPromise) {
+          promise.then(
+            (val) => {
+              addResult(val, index, resolve);
+            },
+            (reason) => {
+              reject(reason);
+            }
+          );
+        } else {
+          addResult(promise, index, resolve);
+        }
+      });
+    });
+  };
+  // 谁最快返回谁
+  race = (promises = []) => {
+    return new MyPromise((resolve, reject) => {
+      promises.forEach((promise) => {
+        if (promise instanceof MyPromise) {
+          promise.then(resolve, reject);
+        } else {
+          resolve(promise);
+        }
+      });
+    });
+  };
+  // 当所有 promise 执行完后，生成一个 Array<{ status, value, reason }> 的数组
+  allSettled = (promises = []) => {
+    let count = 0;
+    let result = [];
+    return new MyPromise((resolve, reject) => {
+      function addResult(res, index, status) {
+        count++;
+        const extra = status === MyPromise.FULFILLED
+          ? { value: res }
+          : status === MyPromise.REJECTED
+            ? { reason: res }
+            : {};
+        result[index] = { status, ...extra };
+        if (count === promises.length) {
+          resolve(result);
+        }
+      };
+      promises.forEach((promise, index) => {
+        if (promise instanceof MyPromise) {
+          promise.then(
+            (val) => {
+              addResult(val, index, MyPromise.FULFILLED);
+            },
+            (reason) => {
+              addResult(reason, index, MyPromise.REJECTED);
+            },
+          );
+        } else {
+          addResult(promise, index, MyPromise.FULFILLED);
+        };
+      });
+    });
+  };
+  // 1. 任意一个成功就算成功，直接返回结果
+  // 2. 所有失败才算失败，此时返回 err list
+  any = (promises = []) => {
+    let count = 0;
+    let errorList = [];
+    return new MyPromise((resolve, reject) => {
+      function addError(reason, index) {
+        errorList[index] = reason;
+        if (++count === promises.length) {
+          reject(errorList);
+        }
+      };
+      promises.forEach((promise, index) => {
+        if (promise instanceof MyPromise) {
+          promise.then((value) => {
+            resolve(value);
+          }, (reason) => {
+            addError(reason, index);
+          });
+        } else {
+          resolve(promise);
+        }
+      });
+    });
+  };
 };
 
 var a = new MyPromise((resolve, reject) => {

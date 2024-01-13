@@ -2,7 +2,7 @@
 // const p = new Constructor('a', 'b'); -> objectFactory(Constructor, 'a', 'b');
 
 function objectFactory() {
-  const obj = {};
+  const obj = {}; // 或者使用 Object.create({});
   const Constructor = [...arguments].shift();
   const args = [...arguments].slice(1);
   obj.__proto__ = Constructor.prototype;
