@@ -24,7 +24,7 @@
       }
     }
   }
-  
+
   const Didact = {
     createElement,
   }
@@ -76,21 +76,21 @@ function render(element, container) {
  * workLoop：传入的回调函数，接受一个 IdleDeadline 参数，可以获取当前空闲时间以及回调是否在超时时间前已经执行的状态
  * timeout：如果指定了 timeout，且为正数，回调在 timeout 毫秒后还未被调用，那么回调函数将会放到事件循环中去排队（强制的，不论是否对性能是否有负面影响，不管）
  * */
- 
+
 requestIdleCallback(workLoop, { timeout: 2000 });
 
-/** 
+/**
  * 不建议在 requestIdleCallback 回调函数内进行 DOM 修改操作，因为 requestIdleCallback 回调执行的时机是在（样式变更、布局计算完成之后的），如果在回调函数中做修改，之前做的计算就会失效，下一帧有获取布局之类的操作的话，那么浏览器就需要执行强制重排工作，会极大的影响性能，推荐放在回调函数的是一些 小块的 微任务（microTask）
 */
 
 // ---
 
-/** 
+/**
  * animationWidth：传入的回调函数，浏览器会在下次重绘之前调用指定的回调函数更新动画
 */
 requestAnimationFrame(animationWidth);
 
-/** 
+/**
  * React 中的并发模式并不算是真正意义上的并发，怎么说呢？真正意义上的并发模式是指多线程并发，类似于多线程语言 Java 这种，多个 Task 跑在多个线程中，而 React 中的 Concurrent Mode 是属于 多个 Task 跑在一个线程，就是 JS 主线程中的，只是说多个 Task 可以在 "runing" 和 "sleep" 来回切换，这其实跟 CPU 的执行原理类似，就是 时间切片（Timing Slicing）
 */
 
@@ -160,7 +160,7 @@ function performUnitOfWork(fiber) {
 
 ```JavaScript
 
-/** 
+/**
  * 在上面的 DFS 中，有一段 dom 操作的代码，每执行一次都会操作一次 dom，这样可能会在浏览器会在我们完成渲染之前中断操作，这样用户就会看到不完整的 UI，所以需要将这一段代码放到别的地方（requestIdleCallback，这样就不会影响页面渲染）
 */
 
@@ -206,7 +206,7 @@ requestIdleCallback(workLoop);
 
 ```JavaScript
 
-/** 
+/**
  * Diff 的过程其实是 fiber 比较的过程，为了比较 fiber 的变化，React 在 递归创建 Fiber 的时候 上新增了一个 alternate 属性用于存储上一次的 fiber 值，比较大体分为 3 类， 第一类，type 的比较，如果前后 fiber 节点 type 一致，说明只是改动，会标记此次改动为 update，第二类，是 新的 fiber 存在 但 type 不同，这种情况属于新增的范畴，会标记此次改动为 add，第三类，old fiber 存在但 type 不同，这种情况属于删除范畴，需要将 old fiber 删除，会标记为 delete，这个过程就属于协调过程， reconciler 阶段，然后在 commit 阶段会根据 刚才我们标记的 类型 像 add、update、delete 来新增、更新、删除 dom
 */
 
