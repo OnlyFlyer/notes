@@ -75,3 +75,27 @@ function xxCallback(callback, deps) {
   index++;
   return callback;
 };
+
+// memorize
+// function memorize(f) {
+// 	if (!f.cache) f.cache = {};
+// 	return function() {
+// 		var cacheId = [].slice.call(arguments).join('');
+// 		console.log(this);
+// 		return f.cache[cacheId] ?
+// 				f.cache[cacheId] :
+// 				f.cache[cacheId] = f.apply(window, arguments);
+// 	};
+// }
+
+function MyMemorize(fn) {
+  if (!fn.cache) fn.cache = new Map();
+  return function() {
+    const args = [...arguments];
+    const cacheId = args.join('');
+    if (fn.cache[cacheId]) return fn.cache[cacheId];
+    const result = fn(...args);
+    fn.cache[cacheId] = result;
+    return result;
+  };
+};
