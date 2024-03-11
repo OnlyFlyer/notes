@@ -99,3 +99,62 @@ function MyMemorize(fn) {
     return result;
   };
 };
+
+type ITree = {
+  name: string;
+  children: ITree[];
+};
+
+// 根据数据结构创建一个 fiber 结构
+const tree: ITree = {
+  name: 'A',
+  children: [
+    { name: 'B', children: [{ name: 'E', children: [] }, { name: 'F', children: [] }] },
+    { name: 'C', children: [] },
+    {
+      name: 'D',
+      children: [
+        { name: 'G', children: [] },
+        { name: 'H', children: [{ name: 'I', children: [] }] }
+      ]
+    },
+  ],
+};
+type IFiber = {
+  name: string;
+  return?: IFiber | null;
+  child?: IFiber | null;
+  sibling?: IFiber | null;
+  children: ITree[];
+};
+const wipRoot: IFiber = {
+  name: 'root',
+  return: null,
+  sibling: null,
+  child: null,
+  children: [tree],
+};
+
+function buildFiber(fiber: IFiber) {
+  const { children } = fiber;
+  let index = 0;
+  let prevSibling: Pick<IFiber, 'sibling'> | null = null;
+  while (index < children.length) {
+    const ele = children[index];
+    const newFiber: IFiber = {
+      name: ele.name,
+      children: ele.children,
+      return: fiber,
+    };
+    if (index === 0) {
+      fiber.child = newFiber;
+    } else if(ele) {
+      prevSibling?.sibling = newFiber;
+    }
+    prevSibling = newFiber;
+    index++;
+    buildFiber(newFiber);
+  }
+};
+
+buildFiber(wipRoot);
