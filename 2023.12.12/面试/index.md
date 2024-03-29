@@ -207,7 +207,9 @@ on 和 once 可以结合
 * qiankun 是通过 eval 来执行这些 js 的内容，而 vite 里面 import/export 没有被转码， 所以直接接入会报错：不允许在非type=module 的 script 里面使用 import;
 在去年年尾的时候，在qiankun 的 issues 中找到了2种方法；
 
+https://github.com/kuitos/import-html-entry/pull/35
 
+vite 配置成功参考： https://juejin.cn/post/7263457589810708537#heading-36
 
 应用通信， postMessage， 子应用之间、父子应用之间通信
 
