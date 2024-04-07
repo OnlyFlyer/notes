@@ -81,11 +81,18 @@ esm 现在也可以支持不放在顶部了， daynamic import 动态加载，�
 
 esm 可以通过 import url 引入， commonjs 不行，但会带来一个问题，请问是什么问题？
 
+   1. 依赖于网络连接，如果网络不稳定或者无法访问远程资源可能会导致加载失败
+   2. 缺乏可靠性，如果网络攻击等，会导致应用程序加载变慢或者无法正常工作
+   3. 缺乏安全性，如果被恶意劫持，返回了恶意的代码，可能会导致安全风险
+   4. 缓存问题不好控制
+
 csp（Content Security Policy） 了解过吗？
 
 8. 简单请求和非简单请求的区别，具体一点，非简单请求时，options 请求，服务端需要返回什么才是正常的，什么不是正常的
 
-9. 你觉得你最熟悉的是哪一块？
+
+
+9.  你觉得你最熟悉的是哪一块？
 
 webpack 的性能问题解决
 10. 离线首屏加载优化怎么做的？
@@ -217,10 +224,87 @@ vite 配置成功参考： https://juejin.cn/post/7263457589810708537#heading-36
 
 如果通信通过上面的发布订阅去做就可以。
 
-   1. css module
-   2. css-in-js
-   3. Shadow DOM
-   4. vue scope
+js 隔离：
+
+  1. Proxy 做代理
+
+  2. 快照
+
+
+```js
+
+// 遍历window属性并执行回调
+const iter = (window, callback) => {
+  for (const prop in window) {
+    if(window.hasOwnProperty(prop)) {
+      callback(prop);
+    }
+  }
+}
+
+class SnapshotSandbox {
+  constructor() {
+    this.proxy = window;
+    this.modifyPropsMap = {};
+	  this.windowSnapshot = {};
+  }
+  // ------激活沙箱-------
+  active() {
+		 // 记录active时window的快照
+    iter(window, (prop) => {
+      this.windowSnapshot[prop] = window[prop];
+    });
+		// 将上一次沙箱修改过的属性赋值给window(还原修改,重新进入沙箱)
+    Object.keys(this.modifyPropsMap).forEach(p => {
+      window[p] = this.modifyPropsMap[p];
+    })
+  }
+
+// ----- 使用该沙箱,在全局window上操作,退出时还原window为快照状态
+
+  // --------退出沙箱-------
+  inactive(){
+    iter(window, (prop) => {
+	// 修改后的window和快照时的window属性比对,找出修改了的属性,放入modifyPropsMap
+      if(this.windowSnapshot[prop] !== window[prop]) {
+        this.modifyPropsMap[prop] = window[prop];
+        window[prop] = this.windowSnapshot[prop]; // 还原window为快照时的状态
+      }
+    })
+  }
+}
+
+const sandbox = new SnapshotSandbox();
+((window) => {
+   // 激活沙箱 (进入到沙箱)
+   sandbox.active();
+   window.name= '张三';
+   console.log(window.name); // 张三
+   // 退出沙箱 (切换到原本的window)
+   sandbox.inactive();
+   console.log(window.name); // undefined
+   // 重新激活沙箱(重新进入到沙箱)
+   sandbox.active();
+   console.log(window.name); // 张三
+})(sandbox.proxy);
+
+
+```
+
+
+样式隔离：
+
+   1. antd 的那种，在构建的时候通过构建工具统一 prefix 这种方式
+   2. css module，为每一个 className 加一个hash 值保证唯一
+   3. css-in-js
+   4. Shadow DOM
+   5. vue scope
+   6. web component
+
+如何实现对 localStorage、cookie 隔离：
+
+  1. 一般这种场景不存在，因为一个应用通常这些信息都是共享的，比如登陆这种场景，如果需要做的话，那么 qiankun 提供了
+  2. 几个钩子函数，这一部分可以在钩子函数里面去进行缓存，然后挂载的时候再取应该就好了
 
 1.  问题
 
