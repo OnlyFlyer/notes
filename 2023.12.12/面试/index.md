@@ -226,10 +226,14 @@ vite 配置成功参考： https://juejin.cn/post/7263457589810708537#heading-36
 
 js 隔离：
 
-  1. Proxy 做代理
+#### 快照沙箱
 
-  2. 快照
+  优缺点: snapshotSandbox会污染全局window，但是可以支持不兼容Proxy的浏览器。
+  基本思路: 在利用快照,赋值和还原window属性,达到进出沙箱的效果
 
+  激活沙箱,记录 window 的快照 windowSnapshot 将上一个沙箱修改过的属性赋值给window(还原修改)
+  使用该沙箱,操作全局window
+  退出沙箱 找出修改了的属性存入modifyPropsMap 还原window为快照状态
 
 ```js
 
@@ -274,23 +278,91 @@ class SnapshotSandbox {
   }
 }
 
-const sandbox = new SnapshotSandbox();
+const proxy1 = new SnapshotSandbox();
+const proxy2 = new SnapshotSandbox();
 ((window) => {
    // 激活沙箱 (进入到沙箱)
-   sandbox.active();
-   window.name= '张三';
+   proxy1.active();
+   window.name= 'proxy1';
    console.log(window.name); // 张三
    // 退出沙箱 (切换到原本的window)
-   sandbox.inactive();
+   proxy1.inactive();
    console.log(window.name); // undefined
    // 重新激活沙箱(重新进入到沙箱)
-   sandbox.active();
+   proxy1.active();
    console.log(window.name); // 张三
-})(sandbox.proxy);
+})(proxy1.proxy);
+console.log(window.name, '--全局window');
+((window) => {
+   // 激活沙箱 (进入到沙箱)
+   proxy2.active();
+   window.name= 'proxy2';
+   console.log(window.name); // 张三
+   // 退出沙箱 (切换到原本的window)
+   proxy2.inactive();
+   console.log(window.name); // undefined
+   // 重新激活沙箱(重新进入到沙箱)
+   proxy2.active();
+   console.log(window.name); // 张三
+})(proxy2.proxy);
 
 
 ```
 
+#### 代理沙箱
+
+1. 激活沙箱，每次对 window 取值的时候，先从自己沙箱环境的 fakeWindow 里面找，
+2. 如果不存在，就从rawWindow(外部的window) 里去找；
+3. 当对沙箱内部的window对象赋值的时候，会直接操作fakeWindow，而不会影响到rawWindow。
+4. 优点： 不会污染全局window，支持多个子应用同时加载。
+
+```js
+class ProxySandbox {
+  sandboxRunning = false;
+  proxy = null;
+  constructor() {
+    const rawWindow = window;
+    const fakeWindow = {};
+    const proxy = new Proxy(fakeWindow, {
+      set: (target, propName, propValue) => {
+        if (!this.sandboxRunning) return;
+        target[propName] = propValue;
+        return true;
+      },
+      get: (target, propName) => {
+         // 如果fakeWindow里面有，就从fakeWindow里面取，否则，就从外部的window里面取
+        let value = propName in target ? target[propName] : rawWindow[propName];
+        return value;
+      },
+    });
+    this.proxy = proxy;
+  };
+  active() {
+    this.sandboxRunning = true;
+  }
+  inactive() {
+    this.sandboxRunning = false;
+  };
+};
+window.sex = '男';
+let proxy1 = new ProxySandbox();
+let proxy2 = new ProxySandbox();
+(function(window) {
+  proxy1.active();
+  console.log('修改 proxy1 之前的sex：', window.sex); // 男
+  window.sex = '女';
+  console.log('修改 proxy1 之后的sex：', window.sex); // 男
+})(proxy1.proxy)
+console.log('外部window.sex', window.sex);  // 男(不影响外部window)
+(function(window) {
+  proxy2.active();
+  console.log('修改前proxy2的sex', window.sex);// 男
+  window.sex = '人妖';
+  console.log('修改后proxy2的sex', window.sex);//人妖
+})(proxy2.proxy)
+
+
+```
 
 样式隔离：
 
