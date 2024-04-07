@@ -105,6 +105,24 @@ type ITree = {
   children: ITree[];
 };
 
+// 页面中可能会有多个 useState;
+let states: Array<any> = [];
+let currentHook = 0;
+function useState(initState) {
+  if (typeof states[currentHook] === 'undefined') {
+    states[currentHook] = initState;
+  }
+  let hookIndex = currentHook;
+  function setState(valOrCb) {
+    const _state = typeof valOrCb === 'function' ? valOrCb(states[hookIndex]) : valOrCb;
+    states[hookIndex] = _state;
+    // ReactDOM.render(<App />, 'root');
+  };
+  return [states[currentHook++], setState];
+};
+
+
+
 // 根据数据结构创建一个 fiber 结构
 const tree: ITree = {
   name: 'A',
