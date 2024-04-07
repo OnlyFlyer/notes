@@ -62,6 +62,7 @@ function useRef(initial) {
 let nextUnitOfWork = null;
 let wipRoot = null;
 
+// reconcileChildren 其实也就是协调的过程
 function buildFiber(fiber) {
   const { children } = fiber;
   let index = 0;
@@ -89,12 +90,14 @@ function performUnitOfWork(fiber) {
   if (fiber.child) {
     return fiber.child;
   }
+  // 没有找到 child，且没有找到 sibling，就需要往上去回溯，但是此时回溯只
+  // 能找 sibling，不能再找 child，因为 child 已经遍历过了
   let nextFiber = fiber;
   while (nextFiber) {
     if (nextFiber.sibling) {
       return nextFiber.sibling;
     }
-    nextFiber = nextFiber.parent;
+    nextFiber = nextFiber.return;
   }
 };
 
