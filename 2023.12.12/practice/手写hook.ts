@@ -1,3 +1,17 @@
+// hooks 原理
+
+// 1. hook 本质就是函数，每次render都会重新执行，那么函数是没有状态的，React 是将状态
+// 数据放到了对应 fiber 节点上的 memorizedState上，这个数据是一个链表，链表的顺序就是
+// 当前 fiber 节点所有用到的所有hook。通过构建 memorizedState 这样一个链表来保持执行
+// 顺序的一致，这也是为什么 hook 不能定义在判断和循环里，因为这样会影响组件下一次更新时的 hook 链表结构，
+// current 树的 memorizedState 缓存 hook 信息，和当前 workInProgress 不一致，如果涉及到
+// 读取state等操作，就会发生异常。
+
+// 2. hook 执行内部区分初次执行和多次执行两个步骤，第一次执行是调用的 mountHook ，第二次则调用的是
+// updateHook
+
+// 我在开发中常使用的 hook 有 useState，useCallback，useMemo，useRef，effect hook 等等
+
 let hookState: Array<any> = [];
 let hookIndex = 0;
 
@@ -176,3 +190,6 @@ function buildFiber(fiber: IFiber) {
 };
 
 buildFiber(wipRoot);
+
+// 实践自定义 hook，多创建几个自定义 hook，不要使用 useState、useCallback 等内置的，比如
+// 状态管理里面的数据等，看一下 memorizedState 的结构是怎样的
