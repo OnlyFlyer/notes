@@ -190,6 +190,3 @@ function buildFiber(fiber: IFiber) {
 };
 
 buildFiber(wipRoot);
-
-// 实践自定义 hook，多创建几个自定义 hook，不要使用 useState、useCallback 等内置的，比如
-// 状态管理里面的数据等，看一下 memorizedState 的结构是怎样的
