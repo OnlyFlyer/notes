@@ -7,18 +7,21 @@
 5. 完成模块编译并输出（递归完事后，得到每个文件结果，包含每个模块以及他们之间的依赖关系，根据entry或分包配置生成代码块chunk;）
 6. 输出完成(输出所有的chunk到文件系统；)
 
-
 ## webpack 的热更新原理
 
 hot update 开启一个服务，这个服务做了两件事
 
 1. 添加了对 webpack 编译的监听
 2. 将创建 websocket 连接和加载chunk的方法注入到浏览器代码中（client端）（HMR Runtime）
-   1. webpack-dev-server 在开发环境下，启动的时候会向 entry 注入 HMR Runtime，client 下面的一个文件，
+   1. webpack-dev-server 在开发环境下，启动的时候会向 entry 注入 HMR(Hot Module Replacement) Runtime，client 下面的一个文件，
    2. 会注入热更新运行时到打包生成的代码中，最终会在浏览器中运行，这个运行时负责和开发服务器建立连接，接收服务器发送的更新，并在客户端应用更新
 3. 对浏览器进行了 websocket 长连接，
 
-当文件变化触发 webpack 编译，编译完成之后呢，webpack-dev-server 能够监听到，会通过 socket 消息告知浏览器准备刷新
+当文件变化触发 webpack 编译，编译完成之后呢
+
+会生成一个 hash 值，每次编译都不一样，还有一个是 hash.json，hash.js，json 是展示哪些模块有更新，hash.js 对应的是具体模块的代码
+
+webpack-dev-server 能够监听到，会通过 socket 消息告知浏览器准备刷新
 
 hotApply
 1. 删除过期的模块，就是需要替换的模块
