@@ -84,6 +84,9 @@ const Demo = () => {
   };
 };
 
+// useEffect中的副作用代码会在组件渲染完成后异步执行，而直接调用异步方
+// 法会导致副作用代码的执行时机不受控制，可能会引起不可预测的错误。
+
 // error, 不允许直接调用 async，因为 useEffect 执行是在 commit 阶段
 useEffect(async () => {
   const res = await getUserInfo(number);

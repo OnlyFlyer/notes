@@ -23,7 +23,6 @@ export function createStore(reducer) {
     subscribe,
     getState,
   };
-
 };
 
 //! Redux 支持异步(中间键)
