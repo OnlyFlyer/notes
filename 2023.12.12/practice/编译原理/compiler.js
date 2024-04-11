@@ -136,8 +136,8 @@ function parser(tokens) {
   return ast;
 };
 
-const tokens = tokenizer(input);
-const ast = parser(tokens);
+const tokens = tokenizer(input); // 词法分析
+const ast = parser(tokens); // 语法分析，函数
 
 // 代码转换
 
