@@ -392,3 +392,35 @@ console.log('外部window.sex', window.sex);  // 男(不影响外部window)
 如何禁止 js 访问 cookie：
 
 使用 set-cookie 来设置 cookie，httpOnly 选项，这个选项禁止任何 js 访问 cookie
+
+### 大华华橙
+
+
+### 华为OD
+
+1. 多仓库方案 monorepo
+
+解决了哪些痛点：
+
+1. 资源浪费
+
+通常情况下，一个公司的业务项目只有一个主干，多 git repo 的方式，这样 node_module 会出现大量的冗余，比如它们可能都会安装 React、React-dom 等包，浪费了大量存储空间。
+
+2. 调试困难
+
+很多公共的包通过 npm 安装，想要调试依赖的包时，需要通过 npm link 的方式进行调试。
+
+3. 资源包升级
+
+一个项目依赖了多个 npm 包，当某一个子 npm 包代码修改升级时，都要对主干项目包进行升级修改。 (这个问题感觉是最烦的，可能一个版本号就要去更新一下代码并发布)
+
+monorepo 原理
+
+monorepo：是将所有的模块统一的放在一个主干分支之中管理
+
+调试本地 npm 包通过软链来 实现
+
+fs.symlinkSync(target,path,type)
+
+它会创建名为 path 的链接，该链接指向 target。type 参数仅在 Windows 上可用，在其他平台上则会被忽略。 它可以被设置为 'dir'、 'file' 或 'junction'。 如果未设置 type 参数，则 Node.js 将会自动检测 target 的类型并使用 'file' 或 'dir'。 如果 target 不存在，则将会使用 'file'。 Windows 上的连接点要求目标路径是绝对路径。 当使用 'junction' 时， target 参数将会自动地标准化为绝对路径。
+
