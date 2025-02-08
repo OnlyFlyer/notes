@@ -1,91 +1,115 @@
 const shell = require('shelljs')
-const path = require('path')
 const inquirer = require('inquirer')
 const chalk = require('chalk')
-const fs = require('fs')
 const ora = require('ora')
+const {
+  SLEEP_TIME_DURATION,
+  sleep,
+  ScriptLogger,
+  joinLog,
+  // BUILD_ALL_TYPE,
+  getAllEnvs,
+  getAppName
+} = require('./helpers/index')
+const { getAllCard } = require('./helpers/file')
 
 /**
  * 底座包打包脚本
  */
 
-function firstUpperCase(str) {
-  return str.toLowerCase().replace(/( |^)[a-z]/g, L => L.toUpperCase())
+/**
+ * @description 根据命令对象生成打包命令，例 {"env":"a1","appName":"data-analysis"} -> card-cli build:miniapp DataAnalysis phx a1 --no-upgrade
+ * @param {cardPath: string; env: string; type: string; delFlag: string} commanderDataStructure
+ * @returns string
+ */
+function getCommanderByQuery(commanderDataStructure) {
+  const appName = commanderDataStructure.appName
+  const appEnv = commanderDataStructure.env
+  return `card-cli build:miniapp ${appName} phx ${appEnv} --no-upgrade`
 }
 
-const buildMiniApp = async () => {
-  console.log('=======buildMiniapp.js========')
-  // 所有的文件名
-  const fileNames = await fs.readdirSync(path.resolve(__dirname, '../'))
-  const envs = fileNames
-    .filter(e => e.includes('.env'))
-    .map(e => e.split('.env.')[1])
-    .filter(Boolean)
-  const apps = await fs.readdirSync(path.resolve(__dirname, '../card'))
+/**
+ * @description 执行打包任务
+ * @param {{ env: string; appName: string}} commanderDataStructure 打包命令对象
+ * @returns {Promise<void>}
+ */
+
+/**
+ * @description 通过命令行选择生成底座包的命令数据结构
+ * @returns {{ env: string; appName: string; }} 打包命令对象
+ */
+async function generateMiniAppCommanderObj() {
+  const allEnvs = await getAllEnvs()
+  const allApps = await getAllCard(true)
+  // TODO 目前底座包打包不支持多包打包并行，所以先删除全部的选项，等后面card-cli 脚手架支持了再放开
+  allApps.shift()
   const res = await inquirer.prompt([
     {
       type: 'list',
       name: 'env',
       message: '请选择你要打包的底座包环境?',
-      choices: envs
+      choices: allEnvs
     },
     {
       type: 'list',
       name: 'app',
       message: '请选择你要打包的底座包?',
-      choices: apps
+      choices: allApps
     }
   ])
-  let appName = res.app
-  try {
-    appName = res.app
-      .split('-')
-      .map(e => firstUpperCase(e))
-      .filter(Boolean)
-      .join('')
-  } catch (err) {
-    console.log(chalk.red('========格式化错误，请确认文件名称是否正确========'))
-    process.exit(1)
+  const appName = getAppName(res.app)
+  const confirmLogs = joinLog(`【环境】：`, chalk.red(res.env), `, 【底座包】：`, chalk.red(appName))
+  ScriptLogger.prototype.beforeBuildMiniAppConfirmLog(confirmLogs)
+  return { env: res.env, appName }
+}
+
+const buildMiniApp = async () => {
+  ScriptLogger.prototype.buildMiniAppLog()
+  let commanderDataStructure = {}
+  let hasConfirm = false
+  do {
+    const cacheObj = await generateMiniAppCommanderObj()
+    // 二次确认
+    const confirm = await inquirer.prompt([
+      {
+        type: 'confirm',
+        name: 'secondCheck',
+        message: '确定以上信息无误?(默认为true)',
+        default: true
+      }
+    ])
+    if (confirm.secondCheck) {
+      hasConfirm = true
+      commanderDataStructure = cacheObj
+    }
+  } while (!hasConfirm)
+
+  const commander = getCommanderByQuery(commanderDataStructure)
+  ScriptLogger.prototype.buildTipLog(commander)
+  const begin = Date.now()
+  const spinner = ora('Loading')
+  spinner.start()
+  // 静默1s，为了让用户看到打包命令
+  await sleep(SLEEP_TIME_DURATION)
+  spinner.stop()
+
+  const { code } = await shell.exec(commander)
+  if (code !== 0) {
+    ScriptLogger.prototype.buildMiniAppErrorLog(commander)
+    shell.exit(1)
     return
   }
-
-  console.log(
-    chalk.green(`您要打包的是
-****************************
-【环境】：${chalk.red(res.env)}, 【底座包】：${chalk.red(appName)}
-****************************
-`)
+  const logs = joinLog(
+    `【环境】：`,
+    chalk.red(commanderDataStructure.env),
+    `,【底座包】: `,
+    chalk.red(commanderDataStructure.appName),
+    ` 打包完成`,
+    `,【打包时间】: `,
+    chalk.red(((Date.now() - begin - SLEEP_TIME_DURATION) / 1000).toFixed(4)),
+    chalk.red('s')
   )
-
-  // confirm
-  const confirm = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'secondCheck',
-      message: '确定以上信息无误?(默认为true)',
-      default: true
-    }
-  ])
-
-  if (!confirm.secondCheck) return
-
-  const commander = `card-cli build:miniapp ${appName} phx ${res.env}`
-
-  console.log(
-    chalk.green(`打包命令为：
-${commander}
-      `)
-  )
-  let begin = Date.now()
-  await shell.exec(commander)
-
-  console.log(
-    chalk.green(`
-=======buildMiniapp.js========
-底座包 ${chalk.red(res.app)} 打包完成, 打包时间: ${Date.now() - begin}ms
-请上传 dist 目录下面的底座 phx.zip 包
-=======buildMiniapp.js========
-`)
-  )
+  ScriptLogger.prototype.buildMiniAppSuccessLog(logs)
+  shell.exit(0)
 }
 buildMiniApp()
